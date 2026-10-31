@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 1.2 – 31 octobre 2026 (devises, relevés mensuels, pas de reprise d'historique) |
+| Version | 1.3 – 31 octobre 2026 (tarification reportée au Lot 5) |
 | Porteur et développeur | @cpuchalver |
 | Statut | Validée pour lancer le Lot 0 |
 | Suivi | [Issues](https://github.com/cpuchalver/my-label-manager/issues) · [Jalons](https://github.com/cpuchalver/my-label-manager/milestones) |
@@ -164,7 +164,10 @@ Jalons clés :
 | 31/10/2026 | Multi-devises et taux de conversion gérés dès le socle (Lot 0). |
 | 31/10/2026 | Relevés mensuels pour tous les partenaires. |
 | 31/10/2026 | Pas de reprise de l'historique des ventes et relevés. |
+| 31/10/2026 | Grille tarifaire reportée au Lot 5 ; les labels pilotes utilisent l'outil sans facturation. |
 
 ## 12. Questions ouvertes
 
-- Grille tarifaire et modèle d'abonnement (par label, par volume de ventes, par nombre de partenaires).
+Aucune question bloquante pour le Lot 0 et le MVP. À traiter plus tard :
+
+- Grille tarifaire et modèle d'abonnement (par label, par volume de ventes, par nombre de partenaires) : au Lot 5, nourrie par les retours des labels pilotes. Pendant les entretiens du Lot 0, noter simplement ce que les labels paient aujourd'hui pour leurs outils.
