@@ -2,6 +2,8 @@
 
 use App\Enums\LabelPermission;
 use App\Enums\LabelRole;
+use App\Models\Label;
+use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +32,16 @@ it('can run again without duplicating roles or permissions', function () {
         ->and(Permission::query()->count())->toBe(count(LabelPermission::cases()));
 });
 
-it('seeds the demo database', function () {
+it('seeds two demo labels with different roles from one label to the other', function () {
     seed(DatabaseSeeder::class);
-})->throwsNoExceptions();
+
+    $demoLabel = Label::firstWhere('slug', 'demo-label');
+    $secondLabel = Label::firstWhere('slug', 'second-label');
+    $managerUser = User::firstWhere('email', 'manager@example.com');
+    $testUser = User::firstWhere('email', 'test@example.com');
+
+    expect($managerUser?->roleIn($demoLabel))->toBe(LabelRole::Manager)
+        ->and($managerUser?->roleIn($secondLabel))->toBe(LabelRole::Admin)
+        ->and($testUser?->roleIn($demoLabel))->toBe(LabelRole::Owner)
+        ->and($testUser?->roleIn($secondLabel))->toBe(LabelRole::Viewer);
+});
