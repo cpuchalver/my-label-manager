@@ -26,7 +26,7 @@ class EditUser extends EditRecord
         $record->fill($data);
 
         if ($record->isDirty('email')) {
-            $record->email_verified_at = null;
+            $record->setAttribute('email_verified_at', null);
         }
 
         $record->save();
