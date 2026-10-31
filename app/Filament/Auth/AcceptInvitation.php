@@ -111,7 +111,12 @@ class AcceptInvitation extends SimplePage
 
         if (Filament::auth()->check()) {
             return $schema->components([
-                Text::make(__('This invitation was sent to :email. Log out, then open the link again.', ['email' => $invitation->email])),
+                Text::make(__('You are logged in with another account. This invitation was sent to :email.', ['email' => $invitation->email])),
+                Actions::make([
+                    Action::make('logOutAndContinue')
+                        ->label(__('Log out and continue'))
+                        ->action(fn () => $this->logOutAndContinue()),
+                ])->fullWidth(),
             ]);
         }
 
@@ -122,6 +127,10 @@ class AcceptInvitation extends SimplePage
                     Action::make('logIn')
                         ->label(__('Log in to accept'))
                         ->url(Filament::getLoginUrl()),
+                    Action::make('forgotPassword')
+                        ->label(__('Forgot your password?'))
+                        ->link()
+                        ->url(Filament::getRequestPasswordResetUrl()),
                 ])->fullWidth(),
             ]);
         }
@@ -181,6 +190,19 @@ class AcceptInvitation extends SimplePage
         session()->regenerate();
 
         $this->redirect(Dashboard::getUrl(panel: 'app', tenant: $invitation->label));
+    }
+
+    /**
+     * Log out the current account and reopen the invitation, so the invited person can accept it.
+     */
+    public function logOutAndContinue(): void
+    {
+        Filament::auth()->logout();
+
+        session()->invalidate();
+        session()->regenerateToken();
+
+        $this->redirect(route('filament.app.invitations.accept', ['token' => $this->token]));
     }
 
     protected function invitation(): ?Invitation
