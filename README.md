@@ -5,6 +5,7 @@ Back-office SaaS pour labels de musique indépendants : catalogue centralisé, v
 ## Documentation
 
 - [Note de cadrage](docs/cadrage.md)
+- [Spécifications du MVP](docs/specs-mvp.md)
 
 ## Suivi du projet
 
