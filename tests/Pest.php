@@ -1,7 +1,9 @@
 <?php
 
+use App\Enums\LabelRole;
 use App\Models\Label;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,7 +22,7 @@ use function Pest\Laravel\actingAs;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
-    ->in('Filament', 'Providers');
+    ->in('Filament', 'Models', 'Providers');
 
 /*
 |--------------------------------------------------------------------------
@@ -54,15 +56,28 @@ function something()
 }
 
 /**
- * Authenticate as a verified member of the given label, or of a new one.
+ * Authenticate as a verified member of the given label, or of a new one, with the given role.
  */
-function actingAsLabelMember(?Label $label = null): User
+function actingAsLabelMember(?Label $label = null, LabelRole $role = LabelRole::Owner): User
 {
-    $user = User::factory()
-        ->hasAttached($label ?? Label::factory())
-        ->create();
+    $label ??= Label::factory()->create();
+
+    $user = User::factory()->create();
+
+    $label->addMember($user, $role);
 
     actingAs($user);
 
     return $user;
+}
+
+/**
+ * Make the app panel, the label and its permissions current, as the panel middleware does for HTTP requests.
+ */
+function withinLabel(Label $label): void
+{
+    Filament::setCurrentPanel('app');
+    Filament::setTenant($label);
+
+    setPermissionsTeamId($label);
 }

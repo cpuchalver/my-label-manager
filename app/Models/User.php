@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LabelRole;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasDefaultTenant;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'is_admin'])]
 #[Hidden(['password', 'remember_token'])]
@@ -25,6 +27,7 @@ class User extends Authenticatable implements FilamentUser, HasDefaultTenant, Ha
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
+    use HasRoles;
     use Notifiable;
 
     public function canAccessPanel(Panel $panel): bool
@@ -76,6 +79,39 @@ class User extends Authenticatable implements FilamentUser, HasDefaultTenant, Ha
         }
 
         return $latestLabel;
+    }
+
+    public function roleIn(Label $label): ?LabelRole
+    {
+        $roleName = $label->withinPermissionsTeam(function (): ?string {
+            $this->unsetRelation('roles');
+
+            $roleName = $this->getRoleNames()->first();
+
+            return is_string($roleName) ? $roleName : null;
+        });
+
+        $this->unsetRelation('roles');
+
+        if ($roleName === null) {
+            return null;
+        }
+
+        return LabelRole::tryFrom($roleName);
+    }
+
+    /**
+     * Give the user a single role in the label, or remove every role when null is given.
+     */
+    public function assignLabelRole(Label $label, ?LabelRole $role): void
+    {
+        $label->withinPermissionsTeam(function () use ($role): void {
+            $this->unsetRelation('roles');
+
+            $this->syncRoles($role === null ? [] : [$role->value]);
+        });
+
+        $this->unsetRelation('roles');
     }
 
     public function rememberLatestLabel(Label $label): void

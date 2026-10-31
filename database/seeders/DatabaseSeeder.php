@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\LabelRole;
 use App\Models\Label;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -16,22 +17,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call(RolesAndPermissionsSeeder::class);
 
         $label = Label::factory()->create([
-            'slug' => 'demo-label',
             'name' => 'Demo Label',
+            'slug' => 'demo-label',
         ]);
 
-        $user = User::factory()
-            ->admin()
-            ->create([
-                'email' => 'test@example.com',
+        $label->addMember(
+            User::factory()->admin()->create([
                 'name' => 'Test User',
-            ]);
+                'email' => 'test@example.com',
+            ]),
+            LabelRole::Owner,
+        );
 
-        if (!$user->labels()->where('labels.id', $label->id)->exists()) {
-            $user->labels()->attach($label);
-        }
+        $label->addMember(
+            User::factory()->create([
+                'name' => 'Manager User',
+                'email' => 'manager@example.com',
+            ]),
+            LabelRole::Manager,
+        );
+
+        $label->addMember(
+            User::factory()->create([
+                'name' => 'Viewer User',
+                'email' => 'viewer@example.com',
+            ]),
+            LabelRole::Viewer,
+        );
     }
 }
