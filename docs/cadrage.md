@@ -104,7 +104,7 @@ Règles de conduite liées au mode solo :
 
 ## 7. Choix techniques de départ
 
-- **Nouveau projet** Laravel 12 + Filament 5 + Livewire 4. La démo Filament (`cpuchalver/filament-demo`) sert de référence d'exemples, pas de base de code : elle contient des mécanismes propres à une démo (réinitialisation horaire de la base, identifiants préremplis, absence de contrôle d'accès).
+- **Nouveau projet** Laravel 13 (PHP 8.3 minimum) + Filament 5 + Livewire 4. La démo Filament (`cpuchalver/filament-demo`) sert de référence d'exemples, pas de base de code : elle contient des mécanismes propres à une démo (réinitialisation horaire de la base, identifiants préremplis, absence de contrôle d'accès).
 - Qualité : Pest, PHPStan niveau 8, Pint, CI GitHub Actions.
 - Multi-tenancy Filament dès le premier jour.
 - Panels : application label, portail partenaires, console plateforme.
