@@ -19,16 +19,19 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $label = Label::factory()->create([
-            'name' => 'Demo Label',
             'slug' => 'demo-label',
+            'name' => 'Demo Label',
         ]);
 
-        User::factory()
+        $user = User::factory()
             ->admin()
-            ->hasAttached($label)
             ->create([
-                'name' => 'Test User',
                 'email' => 'test@example.com',
+                'name' => 'Test User',
             ]);
+
+        if (!$user->labels()->where('labels.id', $label->id)->exists()) {
+            $user->labels()->attach($label);
+        }
     }
 }
