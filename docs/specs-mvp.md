@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 0.4 – 31 octobre 2026 (brouillon à valider) |
+| Version | 0.5 – 31 octobre 2026 (brouillon à valider) |
 | Périmètre | Lot 0 (socle SaaS, devises) et Lot 1 (catalogue, portail partenaires) |
 | Référence | [Note de cadrage v1.4](cadrage.md) |
 | Suivi | Epics [#2 Socle](https://github.com/cpuchalver/my-label-manager/issues/2) · [#3 Catalogue](https://github.com/cpuchalver/my-label-manager/issues/3) · [#8 Portail](https://github.com/cpuchalver/my-label-manager/issues/8) |
@@ -68,10 +68,13 @@ erDiagram
     LABEL ||--o{ RELEASE : "publie"
     RELEASE ||--o{ PISTE : "contient"
     TITRE ||--o{ PISTE : "figure sur"
+    LABEL ||--|{ SUPPLIER : "a (dont lui-même)"
+    PARTENAIRE |o--o| SUPPLIER : "peut être"
+    SUPPLIER ||--o{ PRODUIT : "catalogue"
     RELEASE |o--o{ PRODUIT : "décliné en"
     PRODUIT ||--|{ VARIANTE : "a"
-    PARTENAIRE ||--o{ RATTACHEMENT : "ayant droit"
-    RATTACHEMENT }o--|| REFERENCE : "release, titre ou produit"
+    PARTENAIRE ||--o{ CREDIT : "crédité"
+    CREDIT }o--|| RELEASE_OU_TITRE : "sur"
     PARTENAIRE ||--o{ CONTRAT : "signe"
     CONTRAT }o--o{ RELEASE : "couvre"
     LABEL ||--o{ TAUX_DE_CHANGE : "surcharge"
@@ -114,16 +117,19 @@ Le pays d'un label ou d'un partenaire est celui de son adresse principale ; les 
 
 ### Catalogue
 
+Principe : **le fournisseur possède le produit, le label possède la vente.** Chaque produit appartient au catalogue d'un fournisseur (`Supplier`) : le label lui-même pour ses propres sorties, ou un tiers (label distribué, artiste en dépôt-vente, autre fournisseur). Toutes les ventes, quel que soit le fournisseur, appartiennent au label (le tenant) ; c'est lui qui produit et distribue les relevés de ventes et les documents à ses artistes et à ses fournisseurs (RG-17). Le fournisseur et les crédits d'artistes sont deux liens distincts : sur une sortie du label, le fournisseur est le label, et l'artiste est crédité.
+
 | Entité | Champs principaux | Règles |
 |---|---|---|
-| **Partenaire** | type (artiste, label, distributeur), nom d'usage, raison sociale, e-mail, téléphone, adresses (Address), devise de relevé, n° de TVA, notes | La devise de relevé fait partie des devises actives du label. Pas de coordonnées bancaires au MVP (Lot 3). |
+| **Partenaire** | type (artiste, label, distributeur, autre fournisseur), nom d'usage, raison sociale, e-mail, téléphone, adresses (Address), devise de relevé, n° de TVA, notes | La devise de relevé fait partie des devises actives du label. Pas de coordonnées bancaires au MVP (Lot 3). |
 | **Contact** | partenaire, utilisateur | Un partenaire peut avoir plusieurs contacts. |
+| **Fournisseur** (`Supplier`) | label, partenaire (vide pour le label lui-même), « fournisseur interne » (oui/non), statut | Chaque label a exactement un fournisseur interne, créé automatiquement avec le label et non supprimable : il représente le label. Un partenaire de type artiste, label ou autre fournisseur peut devenir fournisseur (une seule fiche fournisseur par partenaire) ; un distributeur ne l'est pas, c'est un canal de vente. Le catalogue d'un fournisseur est l'ensemble de ses produits. |
 | **Release** | titre, artiste affiché, type (album, EP, single, compilation), numéro de catalogue, date de sortie, statut (en préparation, sortie, retirée), visuel, notes | Numéro de catalogue unique dans le label. |
 | **Titre** | titre, version (ex. « Radio Edit »), ISRC, durée, artiste affiché | ISRC unique dans le label, format contrôlé (RG-04). Un titre peut figurer sur plusieurs releases. |
 | **Piste** | release, titre, disque ou face, position | Ordonne la tracklist d'une release. |
-| **Produit** | release (facultative), type (vinyle, CD, cassette, numérique, merch, autre), nom | Le merch peut exister sans release. |
-| **Variante** | produit, libellé (ex. « Vinyle rouge 180 g », « T-shirt M »), SKU, UPC/EAN, prix de vente conseillé (montant), statut (actif, épuisé, arrêté) | Chaque produit a au moins une variante. SKU unique dans le label ; UPC/EAN unique dans le label et contrôlé (RG-04). La variante est l'unité qui sera rapprochée des ventes au Lot 2. |
-| **Rattachement** | partenaire, référence (release, titre ou produit), rôle (artiste principal, artiste invité, label propriétaire, distributeur, producteur, autre) | Voir RG-05. Les parts et les taux viendront avec les contrats au Lot 3. |
+| **Produit** (`Product`) | fournisseur, release (facultative), type (vinyle, CD, cassette, numérique, merch, autre), nom | Fournisseur obligatoire, unique, par défaut le fournisseur interne. Le merch peut exister sans release. Les produits d'une même release peuvent avoir des fournisseurs différents. |
+| **Variante** (`ProductVariant`) | produit, libellé (ex. « Vinyle rouge 180 g », « T-shirt M »), SKU, UPC/EAN, prix de vente conseillé (montant), statut (actif, épuisé, arrêté) | Chaque produit a au moins une variante. SKU unique dans le label ; UPC/EAN unique dans le label et contrôlé (RG-04). La variante est l'unité qui sera rapprochée des ventes au Lot 2. |
+| **Crédit** | partenaire (artiste), release ou titre, rôle (artiste principal, artiste invité, remixeur, producteur, autre) | Dit qui est crédité, pas qui possède. Voir RG-05. Les parts et les taux viendront avec les contrats au Lot 3. |
 | **Contrat** | partenaire, intitulé, type (royalties artiste, licence, distribution, dépôt-vente, autre), date de début, date de fin (facultative), releases couvertes, fichier PDF, statut (brouillon, publié, archivé), publié le | Seul un contrat publié est visible dans le portail. |
 
 ## 5. Fonctionnalités
@@ -167,30 +173,34 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 
 ### 5.3 Application label – catalogue
 
-**C1 – Partenaires.** Liste filtrable par type et par pays, fiche détaillée avec onglets : informations, adresses, références rattachées, contrats, contacts du portail.
+**C1 – Partenaires.** Liste filtrable par type et par pays, fiche détaillée avec onglets : informations, adresses, crédits, catalogue (s'il est fournisseur), contrats, contacts du portail.
 - Le formulaire d'adresse est un composant commun réutilisé partout : le choix du pays filtre la liste des subdivisions et adapte les champs obligatoires.
-- Un partenaire rattaché à des références ou des contrats ne peut pas être supprimé ; il peut être archivé.
+- Un partenaire crédité, fournisseur ou lié à des contrats ne peut pas être supprimé ; il peut être archivé.
 
-**C2 – Releases.** Liste avec visuel, numéro de catalogue, artiste, type, date, statut ; fiche avec tracklist, produits et partenaires rattachés.
+**C1b – Fournisseurs.** Liste des fournisseurs, le label en tête, avec le nombre de produits et de variantes de chaque catalogue. Une action « Déclarer comme fournisseur » sur la fiche d'un partenaire crée sa fiche fournisseur. Depuis un fournisseur, on consulte et filtre son catalogue.
+
+**C2 – Releases.** Liste avec visuel, numéro de catalogue, artiste, type, date, statut ; fiche avec tracklist, crédits et produits (avec leur fournisseur).
 - Ajout d'une piste à partir d'un titre existant ou création du titre à la volée.
 - Réordonnancement de la tracklist par glisser-déposer.
 
 **C3 – Titres.** Liste et fiche ; la fiche indique les releases sur lesquelles le titre figure.
 
-**C4 – Produits et variantes.** Création d'un produit depuis une release (formats) ou de façon autonome (merch), avec ses variantes.
+**C4 – Produits et variantes.** Création d'un produit depuis une release (formats), depuis un fournisseur ou de façon autonome (merch), avec ses variantes.
+- Le fournisseur est proposé par défaut : le fournisseur interne, ou celui de la release s'il est unique.
+- Changer le fournisseur d'un produit est journalisé (à partir du Lot 2, cela change les relevés : RG-17).
 - Le prix conseillé se saisit dans une devise active ; sa contre-valeur dans la devise de référence s'affiche au taux du jour, à titre indicatif.
 
-**C5 – Rattacher des partenaires.** Depuis une release, un titre ou un produit, ajouter un ou plusieurs partenaires avec leur rôle.
-- Un partenaire rattaché à une release est considéré comme rattaché à ses titres et à ses produits, sauf rattachement explicite différent (RG-05).
+**C5 – Créditer des artistes.** Depuis une release ou un titre, ajouter un ou plusieurs partenaires avec leur rôle.
+- Un artiste crédité sur une release est considéré comme crédité sur ses titres, sauf crédit explicite différent (RG-05).
 
-**C6 – Importer le catalogue (CSV).** Quatre modèles téléchargeables : partenaires, releases, titres et pistes, produits et variantes.
+**C6 – Importer le catalogue (CSV).** Quatre modèles téléchargeables : partenaires (avec l'indication fournisseur), releases et crédits, titres et pistes, produits et variantes (avec leur fournisseur).
 - Le fichier est contrôlé ligne par ligne ; un rapport téléchargeable liste les erreurs, les lignes valides sont importées.
 - Une ligne dont l'identifiant (numéro de catalogue, ISRC, SKU) existe déjà met à jour la référence au lieu de la dupliquer : un import peut être relancé sans risque.
 - Les imports s'exécutent en arrière-plan ; l'utilisateur est notifié à la fin.
 
 **C7 – Recherche.** La recherche globale trouve une référence par titre, artiste, numéro de catalogue, ISRC, UPC/EAN ou SKU.
 
-**C8 – Tableau de bord.** Compteurs (releases, titres, variantes, partenaires, contacts actifs sur le portail) et liste des références incomplètes : release sans UPC, titre sans ISRC, référence sans partenaire rattaché.
+**C8 – Tableau de bord.** Compteurs (releases, titres, variantes, partenaires, contacts actifs sur le portail) et liste des références incomplètes : release sans UPC, titre sans ISRC, release sans artiste crédité. Répartition des produits par fournisseur.
 
 ### 5.4 Application label – contrats et accès au portail
 
@@ -208,8 +218,11 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 
 **P2 – Choisir le partenaire.** Si le contact est rattaché à plusieurs partenaires, il choisit lequel consulter ; l'en-tête rappelle le partenaire et le label en cours.
 
-**P3 – Mes références.** Liste des releases, titres et produits rattachés au partenaire (y compris par héritage), en lecture seule, avec visuel, date, numéro de catalogue, ISRC, UPC/EAN.
-- Aucune information interne n'apparaît : notes internes, autres partenaires rattachés et leurs rôles, prix.
+**P3 – Mes références.** En lecture seule, avec visuel, date, numéro de catalogue, ISRC, UPC/EAN :
+- **en tant qu'artiste** : les releases et titres sur lesquels il est crédité (y compris par héritage), et leurs produits ;
+- **en tant que fournisseur** : les produits et variantes de son catalogue.
+- Aucune information interne n'apparaît : notes internes, autres partenaires et leurs rôles, prix.
+- Le portail ne montre que ce que le label publie : les documents (contrats au MVP, relevés au Lot 3) sont toujours émis par le label (RG-17).
 
 **P4 – Mes contrats.** Liste des contrats publiés avec téléchargement du PDF ; un indicateur signale les contrats non encore consultés.
 
@@ -225,7 +238,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 | RG-02 | **Cloisonnement des partenaires** : un contact ne voit que les données du partenaire sélectionné, et uniquement ce que le portail expose (P3, P4). |
 | RG-03 | **Unicité** dans un label : numéro de catalogue (release), ISRC (titre), SKU et UPC/EAN (variante). Comparaison insensible à la casse, aux espaces et aux tirets. |
 | RG-04 | **Formats** : ISRC sur 12 caractères (pays 2, déclarant 3, année 2, numéro 5) ; UPC sur 12 chiffres ou EAN sur 13 chiffres avec clé de contrôle vérifiée. Les identifiants sont enregistrés sans séparateurs et affichés au format usuel. |
-| RG-05 | **Héritage des rattachements** : release → ses titres et ses produits. Un rattachement direct sur un titre ou un produit s'ajoute à ceux hérités ; l'héritage peut être désactivé référence par référence. |
+| RG-05 | **Héritage des crédits** : un crédit sur une release vaut pour ses titres. Un crédit direct sur un titre s'ajoute à ceux hérités ; l'héritage peut être désactivé release par release. |
 | RG-06 | **Montants** : valeur décimale exacte (jamais en virgule flottante) avec un code devise ; arrondi selon le nombre de décimales de la devise, uniquement à l'affichage et au moment d'une conversion enregistrée. |
 | RG-07 | **Source des taux** : import quotidien des taux de référence de la BCE (publiés les jours ouvrés vers 16 h, heure de Paris), stockés contre l'euro. Les devises non couvertes par la BCE se gèrent par saisie manuelle. |
 | RG-08 | **Choix du taux** pour une devise et une date : taux manuel du label à cette date, sinon taux BCE à cette date, sinon dernier taux disponible dans les 7 jours précédents (week-ends, jours fériés). Les conversions entre deux devises autres que l'euro passent par l'euro. |
@@ -237,6 +250,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 | RG-14 | **Dates** : stockées en UTC, affichées dans le fuseau du label (application) ou de l'utilisateur (portail). |
 | RG-15 | **Impersonation** : réservée aux administrateurs plateforme ; impossible sur un autre administrateur plateforme ou sur un label suspendu ; impossible d'en démarrer une seconde en cours de session. Pendant l'impersonation sont interdits : changer mot de passe, e-mail ou double authentification, gérer les membres et leurs rôles, transférer la propriété ou fermer le label. Les droits sont ceux de l'utilisateur emprunté, jamais plus. Les conditions générales informent les labels de cette possibilité. |
 | RG-16 | **Adresses** : pays obligatoire ; subdivision obligatoire si le pays l'exige, et forcément rattachée à ce pays ; code postal contrôlé quand le pays a un format connu ; noms de pays et de subdivisions affichés dans la langue de l'utilisateur, codes ISO stockés. Une adresse utilisée par un document émis (plus tard : relevé, facture) est copiée dans ce document pour qu'il ne change pas si l'adresse est modifiée. |
+| RG-17 | **Propriété** : chaque produit a un et un seul fournisseur. Toutes les ventes appartiennent au label (le tenant), quel que soit le fournisseur. Le fournisseur détermine à qui le label doit rendre compte des ventes et reverser ; le crédit détermine à quels artistes il doit des royalties. Le label est le seul émetteur des relevés et documents destinés à ses artistes et fournisseurs ; un partenaire ne voit jamais les ventes d'un autre. |
 
 ## 7. Exigences non fonctionnelles
 
@@ -272,11 +286,11 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 
 | Issue | Contenu | Estimation |
 |---|---|---|
-| C1 | Partenaires et contacts | 10 h |
+| C1 | Partenaires, contacts et fournisseurs (fournisseur interne, catalogue) | 12 h |
 | C2 | Releases et tracklist | 10 h |
 | C3 | Titres, contrôles ISRC | 8 h |
 | C4 | Produits et variantes, contrôles UPC/EAN et SKU | 10 h |
-| C5 | Rattachement des partenaires et héritage (RG-05) | 8 h |
+| C5 | Crédits des artistes et héritage (RG-05) | 6 h |
 | C6 | Import CSV du catalogue | 14 h |
 | C7 | Recherche globale et tableau de bord | 6 h |
 | K1 | Contrats : dépôt, publication, archivage, invitation des contacts | 10 h |
@@ -294,4 +308,4 @@ Avec la marge, le Lot 1 représente environ 145 h, soit 6 semaines à 25 h : coh
 2. **Création des labels** : au MVP, c'est l'administrateur plateforme (toi) qui crée chaque label et invite son propriétaire. D'accord ?
 3. **Coordonnées bancaires** : pas stockées avant le Lot 3, pour limiter les données sensibles au MVP. D'accord ?
 4. **Coordonnées du partenaire** : modifiables uniquement par le label (le contact les voit en lecture et demande une correction), ou modifiables par le contact lui-même ?
-5. **Héritage des rattachements** (RG-05) : un artiste rattaché à une release voit-il automatiquement tous ses titres et produits dans le portail, y compris les titres d'autres artistes sur une compilation ? Proposition : oui pour les albums, EP et singles ; non pour les compilations, où seul le rattachement par titre compte.
+5. **Héritage des crédits** (RG-05) : sur une compilation, un artiste crédité voit-il toute la release ? Proposition : non, sur une compilation seuls les crédits par titre comptent ; l'héritage s'applique aux albums, EP et singles.

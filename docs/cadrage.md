@@ -37,7 +37,7 @@ Les trois douleurs prioritaires retenues sont, dans l'ordre :
 | Partenaires : distributeurs | Consulter les relevés qui les concernent | Portail partenaires |
 | Éditeur de la plateforme | Administrer les labels clients | Console plateforme |
 
-Point clé : **royalties artistes et reversements aux labels ou distributeurs reposent sur le même mécanisme**. Un moteur de relevés unique sert tous les partenaires.
+Point clé : **le fournisseur possède le produit, le label possède la vente.** Chaque produit appartient au catalogue d'un fournisseur (le label lui-même, un label distribué, un artiste en dépôt-vente…) ; toutes les ventes appartiennent au label, qui distribue les relevés et documents à ses artistes et fournisseurs. Royalties artistes et reversements aux fournisseurs reposent sur le même mécanisme : un moteur de relevés unique sert tous les partenaires.
 
 ## 4. Objectifs mesurables
 
