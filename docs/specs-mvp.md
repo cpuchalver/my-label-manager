@@ -21,12 +21,12 @@ Hors MVP (rappel) : ventes et connecteurs (Lot 2), clauses de contrat, calcul et
 
 | Espace | URL | Utilisateurs | Isolation (tenant Filament) |
 |---|---|---|---|
-| Application label | `/app` | Équipe du label | Le **label** |
-| Portail partenaires | `/portail` | Contacts des partenaires (artistes, labels, autres fournisseurs) | Le **partenaire** |
+| Application label | `/` (racine) | Équipe du label | Le **label** |
+| Portail partenaires | `/portal` | Contacts des partenaires (artistes, labels, autres fournisseurs) | Le **partenaire** |
 | Console plateforme | `/admin` | Éditeur de la plateforme | Aucune (vue globale) |
 
 - Un **compte utilisateur unique** par adresse e-mail. Un même compte peut être membre de plusieurs labels et contact de plusieurs partenaires (un artiste signé sur deux labels clients voit ses deux fiches dans le portail).
-- L'accès à chaque espace est déterminé par les rattachements du compte : appartenance à un label pour `/app`, contact d'un partenaire pour `/portail`, drapeau administrateur plateforme pour `/admin`.
+- L'accès à chaque espace est déterminé par les rattachements du compte : appartenance à un label pour l'application (`/`), contact d'un partenaire pour `/portal`, drapeau administrateur plateforme pour `/admin`.
 - Dans le portail, un sélecteur permet de passer d'un partenaire à l'autre ; chaque entrée affiche le partenaire et le label concerné (« Artiste X – chez Label Y »).
 
 ## 3. Rôles et droits
@@ -277,10 +277,10 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 |---|---|---|
 | [S1](https://github.com/cpuchalver/my-label-manager/issues/11) | Initialisation du projet, qualité (Pest, PHPStan, Pint), CI | 6 h |
 | [S2](https://github.com/cpuchalver/my-label-manager/issues/12) | Hébergement, recette et production, sauvegardes, suivi des erreurs | 6 h |
-| [S3](https://github.com/cpuchalver/my-label-manager/issues/13) | Labels et multi-tenancy de `/app`, socle des tests de cloisonnement (RG-01) | 10 h |
+| [S3](https://github.com/cpuchalver/my-label-manager/issues/13) | Labels et multi-tenancy de l'application (`/`), socle des tests de cloisonnement (RG-01) | 10 h |
 | [S4](https://github.com/cpuchalver/my-label-manager/issues/14) | Comptes, connexion, double authentification, rôles et policies, membres (L1 à L3) | 10 h |
 | [S5](https://github.com/cpuchalver/my-label-manager/issues/15) | Invitations membres et contacts | 8 h |
-| [S6](https://github.com/cpuchalver/my-label-manager/issues/16) | Panels `/portail` et `/admin`, règles d'accès, console des labels (A1, A2) | 6 h |
+| [S6](https://github.com/cpuchalver/my-label-manager/issues/16) | Panels `/portal` et `/admin`, règles d'accès, console des labels (A1, A2) | 6 h |
 | [S7](https://github.com/cpuchalver/my-label-manager/issues/17) | Montants, devises, paramètres du label (L4, RG-06) | 8 h |
 | [S8](https://github.com/cpuchalver/my-label-manager/issues/18) | Taux de change : import BCE, saisie manuelle, choix du taux, alertes (L5, A3, RG-07 à RG-10) | 12 h |
 | [S9](https://github.com/cpuchalver/my-label-manager/issues/19) | Journal d'audit (L6, RG-12) | 4 h |
