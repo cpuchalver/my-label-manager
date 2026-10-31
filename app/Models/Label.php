@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use LogicException;
 
 #[Fillable(['name', 'slug', 'suspended_at'])]
@@ -22,6 +24,56 @@ class Label extends Model
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    /** @return HasMany<Invitation, $this> */
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(Invitation::class);
+    }
+
+    /** @return HasMany<Invitation, $this> */
+    public function pendingInvitations(): HasMany
+    {
+        return $this->invitations()
+            ->whereNull('accepted_at')
+            ->where('expires_at', '>', now());
+    }
+
+    public function hasMemberWithEmail(string $email): bool
+    {
+        return $this->members()->whereRaw('lower(users.email) = ?', [Str::lower(trim($email))])->exists();
+    }
+
+    /**
+     * Invite someone by email. A pending invitation to the same address is replaced, so its link stops working.
+     */
+    public function inviteMember(string $email, LabelRole $role, ?User $invitedBy = null): Invitation
+    {
+        $email = Str::lower(trim($email));
+
+        if ($role === LabelRole::Owner) {
+            throw new LogicException('Ownership can only be obtained by a transfer.');
+        }
+
+        if ($this->hasMemberWithEmail($email)) {
+            throw new LogicException('This person is already a member of the label.');
+        }
+
+        $this->invitations()
+            ->where('email', $email)
+            ->whereNull('accepted_at')
+            ->delete();
+
+        $invitation = $this->invitations()->make([
+            'email' => $email,
+            'role' => $role,
+            'invited_by_id' => $invitedBy?->getKey(),
+        ]);
+
+        $invitation->send();
+
+        return $invitation;
     }
 
     public function isSuspended(): bool
