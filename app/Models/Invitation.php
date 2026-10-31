@@ -10,11 +10,19 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use LogicException;
 
+/**
+ * @property LabelRole $role
+ * @property Carbon $expires_at
+ * @property Carbon|null $accepted_at
+ * @property-read Label $label
+ * @property-read User|null $invitedBy
+ */
 #[Fillable(['email', 'role', 'invited_by_id', 'expires_at', 'accepted_at'])]
 #[Hidden(['token_hash'])]
 class Invitation extends Model

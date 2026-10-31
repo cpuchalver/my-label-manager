@@ -27,7 +27,7 @@ class LabelInvitation extends Notification
         return (new MailMessage)
             ->subject(__('You are invited to join :label', ['label' => $labelName]))
             ->line(__(':inviter invites you to join :label as :role.', [
-                'inviter' => $this->invitation->invitedBy?->name ?? __('A member'),
+                'inviter' => $this->invitation->invitedBy->name ?? __('A member'),
                 'label' => $labelName,
                 'role' => $this->invitation->role->getLabel(),
             ]))
