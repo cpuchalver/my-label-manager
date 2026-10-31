@@ -10,6 +10,7 @@ use Filament\Pages\Dashboard;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertAuthenticatedAs;
+use function Pest\Laravel\assertGuest;
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
@@ -63,14 +64,39 @@ it('accepts the invitation as soon as the invited user opens the link while logg
     expect($user->roleIn($this->label))->toBe(LabelRole::Manager);
 });
 
+it('shows the account creation form to a new person', function () {
+    get(route('filament.app.invitations.accept', ['token' => 'valid-token']))
+        ->assertOk()
+        ->assertSee('Create your account with jane@example.com')
+        ->assertSee('Create my account');
+});
+
 it('does not let another logged in user accept the invitation', function () {
     actingAs(User::factory()->create(['email' => 'john@example.com']));
 
     get(route('filament.app.invitations.accept', ['token' => 'valid-token']))
         ->assertOk()
-        ->assertSee('This invitation was sent to jane@example.com');
+        ->assertSee('This invitation was sent to jane@example.com')
+        ->assertSee('Log out and continue');
 
     expect($this->invitation->fresh()?->isPending())->toBeTrue();
+});
+
+it('logs out another account and reopens the invitation', function () {
+    actingAs(User::factory()->create(['email' => 'john@example.com']));
+
+    livewire(AcceptInvitation::class, ['token' => 'valid-token'])
+        ->call('logOutAndContinue')
+        ->assertRedirect(route('filament.app.invitations.accept', ['token' => 'valid-token']));
+
+    assertGuest();
+});
+
+it('offers a password reset to an invited person who already has an account', function () {
+    User::factory()->create(['email' => 'jane@example.com']);
+
+    get(route('filament.app.invitations.accept', ['token' => 'valid-token']))
+        ->assertSee('Forgot your password?');
 });
 
 it('refuses an unknown, expired or used link', function (string $token) {
