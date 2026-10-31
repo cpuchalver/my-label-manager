@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 0.2 – 31 octobre 2026 (brouillon à valider) |
+| Version | 0.3 – 31 octobre 2026 (brouillon à valider) |
 | Périmètre | Lot 0 (socle SaaS, devises) et Lot 1 (catalogue, portail partenaires) |
 | Référence | [Note de cadrage v1.4](cadrage.md) |
 | Suivi | Epics [#2 Socle](https://github.com/cpuchalver/my-label-manager/issues/2) · [#3 Catalogue](https://github.com/cpuchalver/my-label-manager/issues/3) · [#8 Portail](https://github.com/cpuchalver/my-label-manager/issues/8) |
@@ -54,7 +54,7 @@ Un seul rôle, **contact**, en lecture seule : il consulte les références et l
 
 ### Console plateforme
 
-L'**administrateur plateforme** crée et suspend les labels, invite leur propriétaire, suit l'import des taux de change. Il n'accède pas au contenu des labels depuis la console.
+L'**administrateur plateforme** crée et suspend les labels, invite leur propriétaire, suit l'import des taux de change. Il n'accède pas au contenu des labels depuis la console ; pour le support, il peut **se connecter à la place d'un utilisateur** (impersonation, A4), sous conditions strictes.
 
 ## 4. Modèle de données
 
@@ -125,6 +125,12 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 **A2 – Inviter le propriétaire.** À la création, l'administrateur saisit l'e-mail du propriétaire, qui reçoit une invitation.
 
 **A3 – Suivre les taux de change.** Un écran montre la date du dernier import BCE, son statut et les devises couvertes ; un bouton relance l'import.
+
+**A4 – Se connecter à la place d'un utilisateur (impersonation).** Depuis la console, l'administrateur choisit un label puis un membre, ou un partenaire puis un contact, et ouvre une session en son nom pour reproduire ce qu'il voit (RG-15).
+- Un motif est obligatoire avant de démarrer (ex. « ticket support : import CSV en erreur »).
+- Pendant toute la session, un bandeau visible sur chaque page indique « Connecté en tant que … » avec un bouton « Revenir à mon compte ».
+- La session s'arrête automatiquement au bout de 30 minutes ou à la déconnexion, et l'administrateur retrouve sa propre session dans la console.
+- Le démarrage et la fin apparaissent dans le journal d'audit du label concerné, consultable par son propriétaire et ses administrateurs, et dans le journal de la plateforme.
 
 ### 5.2 Application label – socle
 
@@ -209,9 +215,10 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 | RG-09 | **Taux manquant** : au-delà de 7 jours sans taux, la conversion est refusée avec un message explicite et une alerte est affichée au label ; aucune valeur par défaut n'est inventée. |
 | RG-10 | **Taux figé** : toute conversion enregistrée conserve le taux, sa date et sa source ; une correction ultérieure des taux ne la modifie pas. En MVP, les conversions sont seulement affichées (C4) ; les premières conversions enregistrées arrivent avec les ventes au Lot 2. |
 | RG-11 | **Suppression** : les références et partenaires utilisés ailleurs ne sont pas supprimables, seulement archivables ; les suppressions possibles sont réversibles 30 jours (corbeille). |
-| RG-12 | **Audit** : sont journalisés les connexions, invitations, changements de rôle, modifications du catalogue et des partenaires, publications et archivages de contrats, taux manuels, imports. Le journal n'est pas modifiable. |
+| RG-12 | **Audit** : sont journalisés les connexions, invitations, changements de rôle, modifications du catalogue et des partenaires, publications et archivages de contrats, taux manuels, imports, sessions d'impersonation. Toute action faite pendant une impersonation est attribuée à l'utilisateur concerné **et** à l'administrateur qui l'a réalisée. Le journal n'est pas modifiable. |
 | RG-13 | **Fichiers** : PDF uniquement pour les contrats, 20 Mo maximum ; images JPG, PNG ou WebP pour les visuels, 10 Mo maximum. Stockage privé ; téléchargement par lien signé valable 5 minutes, après contrôle des droits. |
 | RG-14 | **Dates** : stockées en UTC, affichées dans le fuseau du label (application) ou de l'utilisateur (portail). |
+| RG-15 | **Impersonation** : réservée aux administrateurs plateforme ; impossible sur un autre administrateur plateforme ou sur un label suspendu ; impossible d'en démarrer une seconde en cours de session. Pendant l'impersonation sont interdits : changer mot de passe, e-mail ou double authentification, gérer les membres et leurs rôles, transférer la propriété ou fermer le label. Les droits sont ceux de l'utilisateur emprunté, jamais plus. Les conditions générales informent les labels de cette possibilité. |
 
 ## 7. Exigences non fonctionnelles
 
@@ -227,7 +234,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 
 Estimations en heures de développement, tests compris ; une marge de 20 % est à ajouter pour les imprévus.
 
-### Lot 0 – Socle (epic #2) : environ 70 h
+### Lot 0 – Socle (epic #2) : environ 76 h
 
 | Issue | Contenu | Estimation |
 |---|---|---|
@@ -240,6 +247,7 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 | S7 | Montants, devises, paramètres du label (L4, RG-06) | 8 h |
 | S8 | Taux de change : import BCE, saisie manuelle, choix du taux, alertes (L5, A3, RG-07 à RG-10) | 12 h |
 | S9 | Journal d'audit (L6, RG-12) | 4 h |
+| S10 | Impersonation depuis la console (A4, RG-15) | 6 h |
 
 ### Lot 1 – Catalogue et portail (epics #3 et #8) : environ 120 h
 
