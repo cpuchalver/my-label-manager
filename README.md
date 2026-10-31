@@ -1,6 +1,6 @@
 # My Label Manager
 
-Back-office SaaS pour labels de musique indépendants : catalogue centralisé, ventes Shopify, Bandcamp et distributeurs consolidées, relevés de royalties et de reversements automatiques, portail pour les partenaires (artistes, labels, distributeurs).
+Back-office SaaS pour labels de musique indépendants : catalogue centralisé, ventes Shopify et Bandcamp consolidées, relevés de royalties et de reversements automatiques, portail pour les partenaires (artistes, labels, autres fournisseurs).
 
 ## Documentation
 

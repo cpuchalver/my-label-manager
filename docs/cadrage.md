@@ -2,14 +2,14 @@
 
 | | |
 |---|---|
-| Version | 1.4 – 31 octobre 2026 (portail MVP sans relevés) |
+| Version | 1.5 – 31 octobre 2026 (pas de gestion des distributeurs) |
 | Porteur et développeur | @cpuchalver |
 | Statut | Validée pour lancer le Lot 0 |
 | Suivi | [Issues](https://github.com/cpuchalver/my-label-manager/issues) · [Jalons](https://github.com/cpuchalver/my-label-manager/milestones) |
 
 ## 1. Vision
 
-> Un back-office tout-en-un pour labels indépendants : catalogue centralisé, ventes Shopify, Bandcamp et distributeurs consolidées, relevés de royalties et de reversements calculés automatiquement, et un accès direct pour les partenaires.
+> Un back-office tout-en-un pour labels indépendants : catalogue centralisé, ventes Shopify et Bandcamp consolidées, relevés de royalties et de reversements calculés automatiquement, et un accès direct pour les partenaires.
 
 My Label Manager est un **produit SaaS** destiné aux labels de musique indépendants. Le label du porteur de projet en est le premier utilisateur et le terrain de validation.
 
@@ -17,9 +17,9 @@ My Label Manager est un **produit SaaS** destiné aux labels de musique indépen
 
 Un label indépendant gère aujourd'hui son activité de façon éclatée :
 
-- les ventes sont dispersées entre sa boutique Shopify, Bandcamp et les relevés de ses distributeurs, chacun avec son format ;
+- les ventes sont dispersées entre sa boutique Shopify et Bandcamp, chacun avec son format ;
 - les royalties et reversements sont calculés à la main dans des tableurs, avec un risque d'erreur et un temps important à chaque période ;
-- les partenaires (artistes, labels, distributeurs) reçoivent leurs relevés par e-mail et n'ont aucune visibilité en dehors de ces envois.
+- les partenaires (artistes, labels, autres fournisseurs) reçoivent leurs relevés par e-mail et n'ont aucune visibilité en dehors de ces envois.
 
 Les trois douleurs prioritaires retenues sont, dans l'ordre :
 
@@ -34,7 +34,6 @@ Les trois douleurs prioritaires retenues sont, dans l'ordre :
 | Équipe du label (gérant, comptable) | Centraliser, calculer, payer | Application label |
 | Partenaires : artistes | Consulter leurs relevés et ventes | Portail partenaires |
 | Partenaires : labels (distribués ou en dépôt-vente) | Consulter les ventes de leurs références et ce qui leur est dû | Portail partenaires |
-| Partenaires : distributeurs | Consulter les relevés qui les concernent | Portail partenaires |
 | Éditeur de la plateforme | Administrer les labels clients | Console plateforme |
 
 Point clé : **le fournisseur possède le produit, le label possède la vente.** Chaque produit appartient au catalogue d'un fournisseur (le label lui-même, un label distribué, un artiste en dépôt-vente…) ; toutes les ventes appartiennent au label, qui distribue les relevés et documents à ses artistes et fournisseurs. Royalties artistes et reversements aux fournisseurs reposent sur le même mécanisme : un moteur de relevés unique sert tous les partenaires.
@@ -46,7 +45,7 @@ Point clé : **le fournisseur possède le produit, le label possède la vente.**
 | Centraliser le catalogue | Références du label saisies ou importées avec leurs partenaires | 100 % du catalogue actif | 1 (MVP) |
 | Ouvrir l'accès aux partenaires | Partenaires actifs sur le portail six mois après ouverture | ≥ 50 % | 1 (MVP) |
 | Marché | Labels pilotes utilisant l'outil | 2 à 3 en février 2027 | 1 (MVP) |
-| Centraliser les ventes | Part des ventes du label importées automatiquement | 100 % des canaux actifs (Shopify, Bandcamp, distributeurs) | 2 |
+| Centraliser les ventes | Part des ventes du label importées automatiquement | 100 % des canaux actifs (Shopify, Bandcamp) | 2 |
 | Fiabiliser | Ventes rapprochées automatiquement du catalogue | ≥ 95 % | 2 |
 | Gagner du temps | Durée de production des relevés d'une période | Moins d'une heure, contre plusieurs jours aujourd'hui | 3 |
 | Exactitude | Écart entre relevés calculés par l'outil et relevés produits à la main en parallèle sur les premiers mois | Zéro écart non expliqué | 3 |
@@ -59,7 +58,7 @@ Le MVP se limite volontairement à trois briques, pour mettre un outil en servic
 
 - **Socle SaaS** : multi-tenant (un label = un espace isolé), utilisateurs, invitations, rôles et permissions.
 - **Devises et taux de conversion**, dès le départ (voir ci-dessous).
-- **Catalogue** : releases, titres, formats, merch, identifiants UPC, ISRC, SKU, numéro de catalogue, et partenaires (artistes, labels, distributeurs) rattachés à chaque référence.
+- **Catalogue** : releases, titres, formats, merch, identifiants UPC, ISRC, SKU, numéro de catalogue, fournisseurs propriétaires des produits et artistes crédités.
 - **Portail partenaires** (artistes et fournisseurs) : chaque partenaire consulte **ses références du catalogue et ses contrats**, avec notification à chaque nouveau contrat déposé. Pas de relevés dans le portail du MVP.
 
 Les relevés sont **mensuels**. Jusqu'au Lot 3, ils restent produits et envoyés comme aujourd'hui, hors de l'outil. Au Lot 3, l'outil les calcule chaque mois et les publie directement sur le portail.
@@ -76,14 +75,15 @@ L'outil démarre **sans reprise de l'historique** : seuls le catalogue actif et 
 
 ### Après le MVP
 
-- Ventes centralisées : connecteurs Shopify et Bandcamp, imports CSV des distributeurs, rapprochement avec le catalogue, tableau de bord (Lot 2).
+- Ventes centralisées : connecteurs Shopify et Bandcamp, rapprochement avec le catalogue, tableau de bord (Lot 2).
 - Contrats paramétrables et moteur de relevés : calcul, avances, splits, paiements, publication automatique des relevés sur le portail (Lot 3).
 - Stock et logistique, ventes in-app, synchronisation des quantités vers les canaux (Lot 4).
 - Abonnements, facturation et onboarding libre-service (Lot 5).
 
 ### Hors périmètre
 
-- Distribution numérique vers les plateformes de streaming (le label garde son distributeur).
+- Distribution numérique vers les plateformes de streaming.
+- **Gestion des distributeurs** : ni fiches partenaires, ni accès au portail, ni import de leurs relevés de ventes, ni stock en dépôt chez eux.
 - Comptabilité générale et déclarations fiscales.
 - Gestion des droits d'auteur et éditions musicales (SACEM et équivalents).
 - Application mobile native.
@@ -108,7 +108,7 @@ Règles de conduite liées au mode solo :
 - Qualité : Pest, PHPStan niveau 8, Pint, CI GitHub Actions.
 - Multi-tenancy Filament dès le premier jour.
 - Panels : application label, portail partenaires, console plateforme.
-- Couche « canaux de vente » générique : chaque source (Shopify, Bandcamp, CSV distributeurs, plus tard in-app) produit des ventes dans un format normalisé unique.
+- Couche « canaux de vente » générique : chaque source (Shopify, Bandcamp, plus tard in-app) produit des ventes dans un format normalisé unique.
 - Synchronisations par tâches planifiées et files d'attente.
 - Montants modélisés dès le premier jour comme couple montant + devise (objet valeur, stockage décimal exact), avec une table des taux de change datés et une tâche planifiée de mise à jour quotidienne.
 
@@ -138,7 +138,6 @@ Jalons clés :
 |---|---|---|
 | Diversité des contrats réels plus grande que prévu | Allonge le Lot 3 | Collecter dès le Lot 0 des contrats et relevés existants ; moteur paramétrable, pas de règles codées en dur |
 | Accès à l'API Bandcamp incertain pour un SaaS | Fonction phare compromise | Clarifier les conditions d'accès au Lot 0 ; prévoir l'import CSV du rapport Bandcamp en repli |
-| Formats hétérogènes des relevés distributeurs | Rapprochement incomplet | Modèles de mapping CSV réutilisables, file des ventes non rapprochées |
 | Erreur de calcul dans un relevé | Perte de confiance des partenaires | Tests exhaustifs, traçabilité de chaque montant jusqu'aux ventes sources, double production (outil et méthode actuelle) sur les deux ou trois premiers mois |
 | Conversion de devises incohérente (taux manquant, arrondis) | Écarts dans les relevés | Taux datés et figés, surcharge manuelle, alerte si un taux manque, tests d'arrondi par devise |
 | Fuite de données entre labels ou partenaires | Grave, contractuel et RGPD | Multi-tenancy native, policies systématiques, tests de cloisonnement dédiés |
@@ -148,7 +147,7 @@ Jalons clés :
 ## 10. Prochaines actions (Lot 0)
 
 - [ ] Rassembler 3 à 5 contrats types et un exemple de relevé mensuel par type de partenaire (modèle pour le Lot 3, pas de reprise).
-- [ ] Exporter un échantillon de ventes Shopify, Bandcamp et de chaque distributeur.
+- [ ] Exporter un échantillon de ventes Shopify et Bandcamp.
 - [ ] Clarifier les conditions d'accès à l'API Bandcamp.
 - [ ] Mener 5 à 10 entretiens avec des labels indépendants.
 - [ ] Étudier 3 à 5 outils concurrents et positionner l'offre.
@@ -165,6 +164,7 @@ Jalons clés :
 | 31/10/2026 | Relevés mensuels pour tous les partenaires. |
 | 31/10/2026 | Pas de reprise de l'historique des ventes et relevés. |
 | 31/10/2026 | Portail du MVP limité aux références et aux contrats ; les relevés y arrivent au Lot 3, calculés par l'outil. |
+| 31/10/2026 | Aucune gestion des distributeurs (partenaires, portail, imports de ventes, stock en dépôt). |
 | 31/10/2026 | Grille tarifaire reportée au Lot 5 ; les labels pilotes utilisent l'outil sans facturation. |
 
 ## 12. Questions ouvertes

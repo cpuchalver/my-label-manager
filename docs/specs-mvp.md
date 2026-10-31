@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 0.5 – 31 octobre 2026 (brouillon à valider) |
+| Version | 0.6 – 31 octobre 2026 (brouillon à valider) |
 | Périmètre | Lot 0 (socle SaaS, devises) et Lot 1 (catalogue, portail partenaires) |
 | Référence | [Note de cadrage v1.4](cadrage.md) |
 | Suivi | Epics [#2 Socle](https://github.com/cpuchalver/my-label-manager/issues/2) · [#3 Catalogue](https://github.com/cpuchalver/my-label-manager/issues/3) · [#8 Portail](https://github.com/cpuchalver/my-label-manager/issues/8) |
@@ -22,7 +22,7 @@ Hors MVP (rappel) : ventes et connecteurs (Lot 2), clauses de contrat, calcul et
 | Espace | URL | Utilisateurs | Isolation (tenant Filament) |
 |---|---|---|---|
 | Application label | `/app` | Équipe du label | Le **label** |
-| Portail partenaires | `/portail` | Contacts des partenaires (artistes, labels, distributeurs) | Le **partenaire** |
+| Portail partenaires | `/portail` | Contacts des partenaires (artistes, labels, autres fournisseurs) | Le **partenaire** |
 | Console plateforme | `/admin` | Éditeur de la plateforme | Aucune (vue globale) |
 
 - Un **compte utilisateur unique** par adresse e-mail. Un même compte peut être membre de plusieurs labels et contact de plusieurs partenaires (un artiste signé sur deux labels clients voit ses deux fiches dans le portail).
@@ -121,9 +121,9 @@ Principe : **le fournisseur possède le produit, le label possède la vente.** C
 
 | Entité | Champs principaux | Règles |
 |---|---|---|
-| **Partenaire** | type (artiste, label, distributeur, autre fournisseur), nom d'usage, raison sociale, e-mail, téléphone, adresses (Address), devise de relevé, n° de TVA, notes | La devise de relevé fait partie des devises actives du label. Pas de coordonnées bancaires au MVP (Lot 3). |
+| **Partenaire** | type (artiste, label, autre fournisseur), nom d'usage, raison sociale, e-mail, téléphone, adresses (Address), devise de relevé, n° de TVA, notes | La devise de relevé fait partie des devises actives du label. Pas de coordonnées bancaires au MVP (Lot 3). |
 | **Contact** | partenaire, utilisateur | Un partenaire peut avoir plusieurs contacts. |
-| **Fournisseur** (`Supplier`) | label, partenaire (vide pour le label lui-même), « fournisseur interne » (oui/non), statut | Chaque label a exactement un fournisseur interne, créé automatiquement avec le label et non supprimable : il représente le label. Un partenaire de type artiste, label ou autre fournisseur peut devenir fournisseur (une seule fiche fournisseur par partenaire) ; un distributeur ne l'est pas, c'est un canal de vente. Le catalogue d'un fournisseur est l'ensemble de ses produits. |
+| **Fournisseur** (`Supplier`) | label, partenaire (vide pour le label lui-même), « fournisseur interne » (oui/non), statut | Chaque label a exactement un fournisseur interne, créé automatiquement avec le label et non supprimable : il représente le label. Tout partenaire peut devenir fournisseur (une seule fiche fournisseur par partenaire). L'application ne gère pas les distributeurs. Le catalogue d'un fournisseur est l'ensemble de ses produits. |
 | **Release** | titre, artiste affiché, type (album, EP, single, compilation), numéro de catalogue, date de sortie, statut (en préparation, sortie, retirée), visuel, notes | Numéro de catalogue unique dans le label. |
 | **Titre** | titre, version (ex. « Radio Edit »), ISRC, durée, artiste affiché | ISRC unique dans le label, format contrôlé (RG-04). Un titre peut figurer sur plusieurs releases. |
 | **Piste** | release, titre, disque ou face, position | Ordonne la tracklist d'une release. |
