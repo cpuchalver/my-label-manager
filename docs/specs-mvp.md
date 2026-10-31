@@ -267,7 +267,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 - **Langues** : application en **anglais par défaut** (interface, e-mails, modèles CSV, PDF générés plus tard). Tous les textes passent par les fichiers de traduction Laravel, aucun texte en dur ; chaque utilisateur peut choisir sa langue parmi celles disponibles, et chaque label définit la langue par défaut de ses invitations. **Seul l'anglais est livré au MVP** ; le français viendra plus tard. Le code, la base de données et les identifiants techniques sont en anglais.
 - **Navigateurs** : deux dernières versions de Chrome, Firefox, Safari et Edge ; portail utilisable sur mobile.
 
-## 8. Découpage proposé
+## 8. Découpage
 
 Estimations en heures de développement, tests compris ; une marge de 20 % est à ajouter pour les imprévus.
 
@@ -275,35 +275,35 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 
 | Issue | Contenu | Estimation |
 |---|---|---|
-| S1 | Initialisation du projet, qualité (Pest, PHPStan, Pint), CI | 6 h |
-| S2 | Hébergement, recette et production, sauvegardes, suivi des erreurs | 6 h |
-| S3 | Labels et multi-tenancy de `/app`, socle des tests de cloisonnement (RG-01) | 10 h |
-| S4 | Comptes, connexion, double authentification, rôles et policies, membres (L1 à L3) | 10 h |
-| S5 | Invitations membres et contacts | 8 h |
-| S6 | Panels `/portail` et `/admin`, règles d'accès, console des labels (A1, A2) | 6 h |
-| S7 | Montants, devises, paramètres du label (L4, RG-06) | 8 h |
-| S8 | Taux de change : import BCE, saisie manuelle, choix du taux, alertes (L5, A3, RG-07 à RG-10) | 12 h |
-| S9 | Journal d'audit (L6, RG-12) | 4 h |
-| S10 | Impersonation depuis la console (A4, RG-15) | 6 h |
-| S11 | Référentiel pays et subdivisions (chargement, console A5), adresses polymorphes et composant de formulaire (RG-16) | 8 h |
+| [S1](https://github.com/cpuchalver/my-label-manager/issues/11) | Initialisation du projet, qualité (Pest, PHPStan, Pint), CI | 6 h |
+| [S2](https://github.com/cpuchalver/my-label-manager/issues/12) | Hébergement, recette et production, sauvegardes, suivi des erreurs | 6 h |
+| [S3](https://github.com/cpuchalver/my-label-manager/issues/13) | Labels et multi-tenancy de `/app`, socle des tests de cloisonnement (RG-01) | 10 h |
+| [S4](https://github.com/cpuchalver/my-label-manager/issues/14) | Comptes, connexion, double authentification, rôles et policies, membres (L1 à L3) | 10 h |
+| [S5](https://github.com/cpuchalver/my-label-manager/issues/15) | Invitations membres et contacts | 8 h |
+| [S6](https://github.com/cpuchalver/my-label-manager/issues/16) | Panels `/portail` et `/admin`, règles d'accès, console des labels (A1, A2) | 6 h |
+| [S7](https://github.com/cpuchalver/my-label-manager/issues/17) | Montants, devises, paramètres du label (L4, RG-06) | 8 h |
+| [S8](https://github.com/cpuchalver/my-label-manager/issues/18) | Taux de change : import BCE, saisie manuelle, choix du taux, alertes (L5, A3, RG-07 à RG-10) | 12 h |
+| [S9](https://github.com/cpuchalver/my-label-manager/issues/19) | Journal d'audit (L6, RG-12) | 4 h |
+| [S10](https://github.com/cpuchalver/my-label-manager/issues/20) | Impersonation depuis la console (A4, RG-15) | 6 h |
+| [S11](https://github.com/cpuchalver/my-label-manager/issues/21) | Référentiel pays et subdivisions (chargement, console A5), adresses polymorphes et composant de formulaire (RG-16) | 8 h |
 
 ### Lot 1 – Catalogue et portail (epics #3 et #8) : environ 124 h
 
 | Issue | Contenu | Estimation |
 |---|---|---|
-| C1 | Partenaires, contacts et fournisseurs (fournisseur interne, catalogue) | 12 h |
-| C2 | Releases et tracklist | 10 h |
-| C3 | Titres, contrôles ISRC | 8 h |
-| C4 | Produits et variantes, contrôles UPC/EAN et SKU | 10 h |
-| C5 | Crédits des artistes et héritage (RG-05) | 6 h |
-| C6 | Import CSV du catalogue | 14 h |
-| C7 | Recherche globale et tableau de bord | 6 h |
-| K1 | Contrats : dépôt, publication, archivage, invitation des contacts | 10 h |
-| P1 | Portail : accès, choix du partenaire, profil, modification des coordonnées par le partenaire (P5b) | 12 h |
-| P2 | Portail : mes références | 8 h |
-| P3 | Portail : mes contrats, téléchargement sécurisé, notifications | 8 h |
-| P4 | Tests de cloisonnement du portail (RG-02) | 6 h |
-| R1 | Recette sur le label pilote, saisie du catalogue actif, mise en production | 14 h |
+| [C1](https://github.com/cpuchalver/my-label-manager/issues/22) | Partenaires, contacts et fournisseurs (fournisseur interne, catalogue) | 12 h |
+| [C2](https://github.com/cpuchalver/my-label-manager/issues/23) | Releases et tracklist | 10 h |
+| [C3](https://github.com/cpuchalver/my-label-manager/issues/24) | Titres, contrôles ISRC | 8 h |
+| [C4](https://github.com/cpuchalver/my-label-manager/issues/25) | Produits et variantes, contrôles UPC/EAN et SKU | 10 h |
+| [C5](https://github.com/cpuchalver/my-label-manager/issues/26) | Crédits des artistes et héritage (RG-05) | 6 h |
+| [C6](https://github.com/cpuchalver/my-label-manager/issues/27) | Import CSV du catalogue | 14 h |
+| [C7](https://github.com/cpuchalver/my-label-manager/issues/28) | Recherche globale et tableau de bord | 6 h |
+| [K1](https://github.com/cpuchalver/my-label-manager/issues/29) | Contrats : dépôt, publication, archivage, invitation des contacts | 10 h |
+| [P1](https://github.com/cpuchalver/my-label-manager/issues/30) | Portail : accès, choix du partenaire, profil, modification des coordonnées par le partenaire (P5b) | 12 h |
+| [P2](https://github.com/cpuchalver/my-label-manager/issues/31) | Portail : mes références | 8 h |
+| [P3](https://github.com/cpuchalver/my-label-manager/issues/32) | Portail : mes contrats, téléchargement sécurisé, notifications | 8 h |
+| [P4](https://github.com/cpuchalver/my-label-manager/issues/33) | Tests de cloisonnement du portail (RG-02) | 6 h |
+| [R1](https://github.com/cpuchalver/my-label-manager/issues/34) | Recette sur le label pilote, saisie du catalogue actif, mise en production | 14 h |
 
 Avec la marge, le Lot 1 représente environ 150 h, soit 6 semaines à 25 h : cohérent avec la fin janvier 2027 visée.
 
