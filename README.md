@@ -17,7 +17,7 @@ Basé sur le start-kit [`cpuchalver/filament-label-manager`](https://github.com/
 
 - Laravel 13, Filament 5, Livewire 4, PHP 8.4
 - Panel application à la racine `/`, panel administrateur plateforme sur `/admin` (réservé aux utilisateurs `is_admin`)
-- Pest, Pint, CI GitHub Actions (tests et style)
+- Pest, Pint, PHPStan niveau 8 (Larastan), CI GitHub Actions (tests, style, analyse statique)
 - Laravel Boost et règles de code Spatie pour le développement assisté
 
 ## Installation locale
@@ -39,4 +39,5 @@ php artisan db:seed
 composer run dev              # serveur, files d'attente, logs et Vite
 php artisan test --compact    # tests
 vendor/bin/pint               # mise en forme du code
+vendor/bin/phpstan analyse   # analyse statique (niveau 8)
 ```
