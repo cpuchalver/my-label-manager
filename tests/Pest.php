@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\Label;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+
+use function Pest\Laravel\actingAs;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,4 +51,18 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Authenticate as a verified member of the given label, or of a new one.
+ */
+function actingAsLabelMember(?Label $label = null): User
+{
+    $user = User::factory()
+        ->hasAttached($label ?? Label::factory())
+        ->create();
+
+    actingAs($user);
+
+    return $user;
 }
