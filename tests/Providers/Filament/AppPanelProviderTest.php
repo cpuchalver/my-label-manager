@@ -38,9 +38,12 @@ it('forbids users who are not members of any label', function () {
 });
 
 it('redirects unverified users to the email verification prompt', function () {
-    actingAs(User::factory()->unverified()->hasAttached(Label::factory())->create());
+    $label = Label::factory()->create();
 
-    get('/')->assertRedirect(route('filament.app.auth.email-verification.prompt'));
+    actingAs(User::factory()->unverified()->hasAttached($label)->create());
+
+    get(Dashboard::getUrl(panel: 'app', tenant: $label))
+        ->assertRedirect(route('filament.app.auth.email-verification.prompt'));
 });
 
 it('redirects guests to the app panel login', function () {
