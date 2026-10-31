@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\EnsureLabelIsActive;
+use App\Models\Label;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,6 +29,10 @@ class AppPanelProvider extends PanelProvider
             ->path('')
             ->login()
             ->emailVerification()
+            ->tenant(Label::class, slugAttribute: 'slug')
+            ->tenantMiddleware([
+                EnsureLabelIsActive::class,
+            ], isPersistent: true)
             ->colors([
                 'primary' => Color::Amber,
             ])

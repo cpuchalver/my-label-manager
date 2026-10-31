@@ -1,24 +1,44 @@
 <?php
 
+use App\Models\Label;
 use App\Models\User;
+use Filament\Pages\Dashboard;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
-it('allows verified users to access the app panel', function () {
-    actingAs(User::factory()->create());
+it('redirects verified members to their label dashboard', function () {
+    $label = Label::factory()->create();
 
-    get('/')->assertOk();
+    actingAs(User::factory()->hasAttached($label)->create());
+
+    get('/')->assertRedirect(Dashboard::getUrl(panel: 'app', tenant: $label));
 });
 
-it('allows admins to access the app panel', function () {
-    actingAs(User::factory()->admin()->create());
+it('allows verified members to access their label dashboard', function () {
+    $label = Label::factory()->create();
 
-    get('/')->assertOk();
+    actingAs(User::factory()->hasAttached($label)->create());
+
+    get(Dashboard::getUrl(panel: 'app', tenant: $label))->assertOk();
+});
+
+it('allows admins who are members of a label to access the app panel', function () {
+    $label = Label::factory()->create();
+
+    actingAs(User::factory()->admin()->hasAttached($label)->create());
+
+    get(Dashboard::getUrl(panel: 'app', tenant: $label))->assertOk();
+});
+
+it('forbids users who are not members of any label', function () {
+    actingAs(User::factory()->create());
+
+    get('/')->assertForbidden();
 });
 
 it('redirects unverified users to the email verification prompt', function () {
-    actingAs(User::factory()->unverified()->create());
+    actingAs(User::factory()->unverified()->hasAttached(Label::factory())->create());
 
     get('/')->assertRedirect(route('filament.app.auth.email-verification.prompt'));
 });

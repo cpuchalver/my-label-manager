@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Label;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,9 +18,17 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->admin()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $label = Label::factory()->create([
+            'name' => 'Demo Label',
+            'slug' => 'demo-label',
         ]);
+
+        User::factory()
+            ->admin()
+            ->hasAttached($label)
+            ->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
     }
 }
