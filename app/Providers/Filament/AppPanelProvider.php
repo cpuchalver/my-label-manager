@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Http\Middleware\ApplyLabelPermissions;
 use App\Http\Middleware\EnsureLabelIsActive;
 use App\Models\Label;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,7 +30,14 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('')
             ->login()
+            ->passwordReset()
             ->emailVerification()
+            ->emailChangeVerification()
+            ->profile()
+            ->multiFactorAuthentication([
+                AppAuthentication::make()
+                    ->recoverable(),
+            ])
             ->tenant(Label::class, slugAttribute: 'slug')
             ->tenantMiddleware([
                 ApplyLabelPermissions::class,
