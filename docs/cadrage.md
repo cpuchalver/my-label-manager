@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 1.0 – 31 octobre 2026 |
+| Version | 1.1 – 31 octobre 2026 (MVP resserré) |
 | Porteur et développeur | @cpuchalver |
 | Statut | Validée pour lancer le Lot 0 |
 | Suivi | [Issues](https://github.com/cpuchalver/my-label-manager/issues) · [Jalons](https://github.com/cpuchalver/my-label-manager/milestones) |
@@ -41,31 +41,33 @@ Point clé : **royalties artistes et reversements aux labels ou distributeurs re
 
 ## 4. Objectifs mesurables
 
-| Objectif | Indicateur | Cible |
-|---|---|---|
-| Centraliser | Part des ventes du label importées automatiquement | 100 % des canaux actifs (Shopify, Bandcamp, distributeurs) |
-| Fiabiliser | Ventes rapprochées automatiquement du catalogue | ≥ 95 % |
-| Gagner du temps | Durée de production des relevés d'une période | Moins d'une heure, contre plusieurs jours aujourd'hui |
-| Exactitude | Écart entre relevés calculés et relevés historiques validés | Zéro écart non expliqué |
-| Adoption partenaires | Partenaires actifs sur le portail six mois après ouverture | ≥ 50 % |
-| Marché | Labels pilotes utilisant l'outil | 2 à 3 en mai 2027 |
+| Objectif | Indicateur | Cible | Lot |
+|---|---|---|---|
+| Centraliser le catalogue | Références du label saisies ou importées avec leurs partenaires | 100 % du catalogue actif | 1 (MVP) |
+| Ouvrir l'accès aux partenaires | Partenaires actifs sur le portail six mois après ouverture | ≥ 50 % | 1 (MVP) |
+| Marché | Labels pilotes utilisant l'outil | 2 à 3 en février 2027 | 1 (MVP) |
+| Centraliser les ventes | Part des ventes du label importées automatiquement | 100 % des canaux actifs (Shopify, Bandcamp, distributeurs) | 2 |
+| Fiabiliser | Ventes rapprochées automatiquement du catalogue | ≥ 95 % | 2 |
+| Gagner du temps | Durée de production des relevés d'une période | Moins d'une heure, contre plusieurs jours aujourd'hui | 3 |
+| Exactitude | Écart entre relevés calculés et relevés historiques validés | Zéro écart non expliqué | 3 |
 
 ## 5. Périmètre
 
-### Dans le MVP (Lots 0 à 3, fin avril 2027)
+### Dans le MVP (Lots 0 et 1, fin janvier 2027)
 
-- Socle SaaS multi-tenant : un label = un espace isolé, utilisateurs, rôles.
-- Catalogue : releases, titres, formats, merch, identifiants UPC, ISRC, SKU, numéro de catalogue, partenaires rattachés.
-- Ventes : connecteurs Shopify et Bandcamp, imports CSV des distributeurs, rapprochement avec le catalogue, file des ventes non rapprochées.
-- Contrats paramétrables : taux par canal et format, base brute ou nette, avances recoupables, splits.
-- Moteur de relevés : périodes, calcul, génération PDF et export, suivi des paiements.
-- Portail partenaires : consultation des relevés et des ventes.
-- Tableau de bord simple.
+Le MVP se limite volontairement à trois briques, pour mettre un outil en service le plus tôt possible :
+
+- **Socle SaaS** : multi-tenant (un label = un espace isolé), utilisateurs, invitations, rôles et permissions.
+- **Catalogue** : releases, titres, formats, merch, identifiants UPC, ISRC, SKU, numéro de catalogue, et partenaires (artistes, labels, distributeurs) rattachés à chaque référence.
+- **Portail partenaires** (artistes et fournisseurs) : chaque partenaire consulte ses références et les documents que le label dépose pour lui (relevés au format PDF, contrats), avec notification à chaque nouveau dépôt.
+
+Dans le MVP, les relevés restent produits hors de l'outil et sont déposés à la main sur le portail. Le partenaire bénéficie dès le départ d'un accès en ligne ; le calcul automatique viendra au Lot 3.
 
 ### Après le MVP
 
-- Stock et logistique : mouvements tracés, inventaires, synchronisation des quantités vers les canaux (Lot 4).
-- Ventes in-app (Lot 4).
+- Ventes centralisées : connecteurs Shopify et Bandcamp, imports CSV des distributeurs, rapprochement avec le catalogue, tableau de bord (Lot 2).
+- Contrats paramétrables et moteur de relevés : calcul, avances, splits, paiements, publication automatique des relevés sur le portail (Lot 3).
+- Stock et logistique, ventes in-app, synchronisation des quantités vers les canaux (Lot 4).
 - Abonnements, facturation et onboarding libre-service (Lot 5).
 
 ### Hors périmètre
@@ -103,24 +105,25 @@ Hypothèse : 25 heures par semaine en moyenne, démarrage début novembre 2026.
 
 | Lot | Contenu | Durée | Fin visée |
 |---|---|---|---|
-| 0 – Cadrage et fondations | Cadrage, entretiens marché, socle multi-tenant, CI | 3 à 4 sem. | fin novembre 2026 |
-| 1 – Centraliser | Catalogue et partenaires, Shopify, Bandcamp, imports CSV, rapprochement, tableau de bord | 6 à 8 sem. | fin janvier 2027 |
-| 2 – Calculer | Contrats, moteur de relevés, paiements | 6 à 8 sem. | fin mars 2027 |
-| 3 – Partager | Portail partenaires | 3 à 4 sem. | fin avril 2027 |
-| 4 – Stock et ventes directes | Mouvements, inventaires, ventes in-app, synchro quantités | 4 à 6 sem. | mi-juin 2027 |
-| 5 – Commercialisation SaaS | Abonnements, onboarding, support | 6 à 8 sem. | fin août 2027 |
+| 0 – Cadrage et fondations | Cadrage, entretiens marché, socle SaaS multi-tenant, CI | 3 à 4 sem. | fin novembre 2026 |
+| 1 – MVP | Catalogue et partenaires, portail partenaires avec dépôt manuel de documents | 5 à 7 sem. | fin janvier 2027 |
+| 2 – Centraliser les ventes | Shopify, Bandcamp, imports CSV, rapprochement, tableau de bord | 6 à 8 sem. | fin mars 2027 |
+| 3 – Calculer | Contrats, moteur de relevés, paiements, publication automatique sur le portail | 6 à 8 sem. | fin mai 2027 |
+| 4 – Stock et ventes directes | Mouvements, inventaires, ventes in-app, synchro quantités | 4 à 6 sem. | début juillet 2027 |
+| 5 – Commercialisation SaaS | Abonnements, onboarding, support | 6 à 8 sem. | fin septembre 2027 |
 
 Jalons clés :
 
-- **Fin avril 2027** : MVP complet en production pour le label pilote.
-- **Mai 2027** : 2 à 3 labels pilotes, configurés à la main, sans facturation.
-- **Automne 2027** : ouverture commerciale, en intégrant une marge de 20 % sur les estimations.
+- **Fin janvier 2027** : MVP en production pour le label pilote ; ses partenaires accèdent au portail.
+- **Février 2027** : présentation du MVP à 2 ou 3 labels pilotes, configurés à la main, sans facturation.
+- **Fin mai 2027** : relevés calculés automatiquement, la douleur principale est résolue.
+- **Fin 2027** : ouverture commerciale, en intégrant une marge de 20 % sur les estimations.
 
 ## 9. Risques principaux
 
 | Risque | Impact | Parade |
 |---|---|---|
-| Diversité des contrats réels plus grande que prévu | Allonge le Lot 2 | Collecter dès le Lot 0 des contrats et relevés existants ; moteur paramétrable, pas de règles codées en dur |
+| Diversité des contrats réels plus grande que prévu | Allonge le Lot 3 | Collecter dès le Lot 0 des contrats et relevés existants ; moteur paramétrable, pas de règles codées en dur |
 | Accès à l'API Bandcamp incertain pour un SaaS | Fonction phare compromise | Clarifier les conditions d'accès au Lot 0 ; prévoir l'import CSV du rapport Bandcamp en repli |
 | Formats hétérogènes des relevés distributeurs | Rapprochement incomplet | Modèles de mapping CSV réutilisables, file des ventes non rapprochées |
 | Erreur de calcul dans un relevé | Perte de confiance des partenaires | Tests exhaustifs, traçabilité de chaque montant jusqu'aux ventes sources, validation sur l'historique |
@@ -136,7 +139,7 @@ Jalons clés :
 - [ ] Mener 5 à 10 entretiens avec des labels indépendants.
 - [ ] Étudier 3 à 5 outils concurrents et positionner l'offre.
 - [ ] Initialiser le projet Laravel + Filament avec CI et multi-tenancy (issue #2).
-- [ ] Rédiger les spécifications détaillées du Lot 1 (catalogue et ventes).
+- [ ] Rédiger les spécifications détaillées du MVP (catalogue et portail partenaires).
 
 ## 11. Questions ouvertes
 
