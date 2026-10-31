@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 1.3 – 31 octobre 2026 (tarification reportée au Lot 5) |
+| Version | 1.4 – 31 octobre 2026 (portail MVP sans relevés) |
 | Porteur et développeur | @cpuchalver |
 | Statut | Validée pour lancer le Lot 0 |
 | Suivi | [Issues](https://github.com/cpuchalver/my-label-manager/issues) · [Jalons](https://github.com/cpuchalver/my-label-manager/milestones) |
@@ -60,9 +60,9 @@ Le MVP se limite volontairement à trois briques, pour mettre un outil en servic
 - **Socle SaaS** : multi-tenant (un label = un espace isolé), utilisateurs, invitations, rôles et permissions.
 - **Devises et taux de conversion**, dès le départ (voir ci-dessous).
 - **Catalogue** : releases, titres, formats, merch, identifiants UPC, ISRC, SKU, numéro de catalogue, et partenaires (artistes, labels, distributeurs) rattachés à chaque référence.
-- **Portail partenaires** (artistes et fournisseurs) : chaque partenaire consulte ses références et les documents que le label dépose pour lui (relevés au format PDF, contrats), avec notification à chaque nouveau dépôt.
+- **Portail partenaires** (artistes et fournisseurs) : chaque partenaire consulte **ses références du catalogue et ses contrats**, avec notification à chaque nouveau contrat déposé. Pas de relevés dans le portail du MVP.
 
-Les relevés sont **mensuels**. Dans le MVP, ils restent produits hors de l'outil et sont déposés à la main chaque mois sur le portail, rattachés à leur période (mois). Le partenaire bénéficie dès le départ d'un accès en ligne ; le calcul automatique mensuel viendra au Lot 3.
+Les relevés sont **mensuels**. Jusqu'au Lot 3, ils restent produits et envoyés comme aujourd'hui, hors de l'outil. Au Lot 3, l'outil les calcule chaque mois et les publie directement sur le portail.
 
 L'outil démarre **sans reprise de l'historique** : seuls le catalogue actif et les partenaires sont saisis ou importés. Les ventes et relevés antérieurs à la mise en service restent dans les outils actuels du label.
 
@@ -119,9 +119,9 @@ Hypothèse : 25 heures par semaine en moyenne, démarrage début novembre 2026.
 | Lot | Contenu | Durée | Fin visée |
 |---|---|---|---|
 | 0 – Cadrage et fondations | Cadrage, entretiens marché, socle SaaS multi-tenant, devises et taux, CI | 3 à 4 sem. | fin novembre 2026 |
-| 1 – MVP | Catalogue et partenaires, portail partenaires avec dépôt manuel des relevés mensuels | 5 à 7 sem. | fin janvier 2027 |
+| 1 – MVP | Catalogue et partenaires, portail partenaires (références et contrats) | 5 à 7 sem. | fin janvier 2027 |
 | 2 – Centraliser les ventes | Shopify, Bandcamp, imports CSV, rapprochement, tableau de bord | 6 à 8 sem. | fin mars 2027 |
-| 3 – Calculer | Contrats, moteur de relevés mensuels, paiements, publication automatique sur le portail | 6 à 8 sem. | fin mai 2027 |
+| 3 – Calculer | Contrats, moteur de relevés mensuels, paiements, publication des relevés sur le portail | 6 à 8 sem. | fin mai 2027 |
 | 4 – Stock et ventes directes | Mouvements, inventaires, ventes in-app, synchro quantités | 4 à 6 sem. | début juillet 2027 |
 | 5 – Commercialisation SaaS | Abonnements, onboarding, support | 6 à 8 sem. | fin septembre 2027 |
 
@@ -164,6 +164,7 @@ Jalons clés :
 | 31/10/2026 | Multi-devises et taux de conversion gérés dès le socle (Lot 0). |
 | 31/10/2026 | Relevés mensuels pour tous les partenaires. |
 | 31/10/2026 | Pas de reprise de l'historique des ventes et relevés. |
+| 31/10/2026 | Portail du MVP limité aux références et aux contrats ; les relevés y arrivent au Lot 3, calculés par l'outil. |
 | 31/10/2026 | Grille tarifaire reportée au Lot 5 ; les labels pilotes utilisent l'outil sans facturation. |
 
 ## 12. Questions ouvertes
