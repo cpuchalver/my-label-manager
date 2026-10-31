@@ -36,6 +36,8 @@ class AppPanelProvider extends PanelProvider
             ->emailVerification()
             ->emailChangeVerification()
             ->profile()
+            ->databaseNotifications()
+            ->databaseNotificationsPolling(filled(config('filament.broadcasting.echo')) ? null : '30s')
             ->multiFactorAuthentication([
                 AppAuthentication::make()
                     ->recoverable(),

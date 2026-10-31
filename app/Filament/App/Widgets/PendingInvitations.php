@@ -66,7 +66,7 @@ class PendingInvitations extends TableWidget
                     ->color('danger')
                     ->requiresConfirmation()
                     ->action(function (Invitation $record): void {
-                        $record->delete();
+                        $record->cancel();
 
                         Notification::make()
                             ->title('Invitation cancelled')

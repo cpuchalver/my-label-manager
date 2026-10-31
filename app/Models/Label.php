@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\LabelRole;
+use App\Events\LabelActivityUpdated;
 use Closure;
 use Database\Factories\LabelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LogicException;
@@ -98,6 +100,8 @@ class Label extends Model
         $this->members()->syncWithoutDetaching([$user->getKey()]);
 
         $user->assignLabelRole($this, $role);
+
+        $this->broadcastActivity();
     }
 
     public function changeMemberRole(User $member, LabelRole $role): void
@@ -111,6 +115,8 @@ class Label extends Model
         }
 
         $member->assignLabelRole($this, $role);
+
+        $this->broadcastActivity();
     }
 
     public function removeMember(User $member): void
@@ -122,6 +128,8 @@ class Label extends Model
         $member->assignLabelRole($this, null);
 
         $this->members()->detach($member->getKey());
+
+        $this->broadcastActivity();
     }
 
     public function transferOwnership(User $newOwner): void
@@ -141,6 +149,25 @@ class Label extends Model
 
             $newOwner->assignLabelRole($this, LabelRole::Owner);
         });
+
+        $this->broadcastActivity();
+    }
+
+    /** @return Collection<int, User> */
+    public function administrators(): Collection
+    {
+        return $this->members()
+            ->get()
+            ->filter(fn (User $member): bool => in_array($member->roleIn($this), [LabelRole::Owner, LabelRole::Admin], true))
+            ->values();
+    }
+
+    /**
+     * Tell the open pages of the label that its data changed.
+     */
+    public function broadcastActivity(): void
+    {
+        LabelActivityUpdated::dispatch($this);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\LabelRole;
 use App\Notifications\LabelInvitation;
 use Database\Factories\InvitationFactory;
+use Filament\Notifications\Notification as FilamentNotification;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -85,6 +86,15 @@ class Invitation extends Model
         ])->save();
 
         Notification::route('mail', $this->email)->notify(new LabelInvitation($this, $token));
+
+        $this->label->broadcastActivity();
+    }
+
+    public function cancel(): void
+    {
+        $this->delete();
+
+        $this->label->broadcastActivity();
     }
 
     public function accept(User $user): void
@@ -104,6 +114,27 @@ class Invitation extends Model
 
             $this->forceFill(['accepted_at' => now()])->save();
         });
+
+        $this->notifyAdministratorsOfNewMember($user);
+
+        $this->label->broadcastActivity();
+    }
+
+    protected function notifyAdministratorsOfNewMember(User $member): void
+    {
+        $administrators = $this->label
+            ->administrators()
+            ->reject(fn (User $administrator): bool => $administrator->is($member));
+
+        if ($administrators->isEmpty()) {
+            return;
+        }
+
+        FilamentNotification::make()
+            ->title(__(':name joined :label', ['name' => $member->name, 'label' => $this->label->name]))
+            ->body(__('Role: :role', ['role' => $this->role->getLabel()]))
+            ->success()
+            ->sendToDatabase($administrators, isEventDispatched: true);
     }
 
     /**
