@@ -13,6 +13,8 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     /**
      * Create the label roles and permissions, and keep them in sync with the enums. Safe to run on every deployment.
+     *
+     * The permission cache is cleared explicitly because model events, which normally clear it, may be disabled.
      */
     public function run(): void
     {
@@ -24,6 +26,8 @@ class RolesAndPermissionsSeeder extends Seeder
         foreach (LabelPermission::cases() as $permission) {
             Permission::findOrCreate($permission->value);
         }
+
+        $permissionRegistrar->forgetCachedPermissions();
 
         foreach (LabelRole::cases() as $labelRole) {
             Role::findOrCreate($labelRole->value)->syncPermissions(

@@ -22,7 +22,7 @@ use function Pest\Laravel\actingAs;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
-    ->in('Filament', 'Models', 'Providers');
+    ->in('Filament', 'Models', 'Providers', 'Seeders');
 
 /*
 |--------------------------------------------------------------------------
