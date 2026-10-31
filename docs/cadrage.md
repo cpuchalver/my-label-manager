@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 1.1 – 31 octobre 2026 (MVP resserré) |
+| Version | 1.2 – 31 octobre 2026 (devises, relevés mensuels, pas de reprise d'historique) |
 | Porteur et développeur | @cpuchalver |
 | Statut | Validée pour lancer le Lot 0 |
 | Suivi | [Issues](https://github.com/cpuchalver/my-label-manager/issues) · [Jalons](https://github.com/cpuchalver/my-label-manager/milestones) |
@@ -49,7 +49,7 @@ Point clé : **royalties artistes et reversements aux labels ou distributeurs re
 | Centraliser les ventes | Part des ventes du label importées automatiquement | 100 % des canaux actifs (Shopify, Bandcamp, distributeurs) | 2 |
 | Fiabiliser | Ventes rapprochées automatiquement du catalogue | ≥ 95 % | 2 |
 | Gagner du temps | Durée de production des relevés d'une période | Moins d'une heure, contre plusieurs jours aujourd'hui | 3 |
-| Exactitude | Écart entre relevés calculés et relevés historiques validés | Zéro écart non expliqué | 3 |
+| Exactitude | Écart entre relevés calculés par l'outil et relevés produits à la main en parallèle sur les premiers mois | Zéro écart non expliqué | 3 |
 
 ## 5. Périmètre
 
@@ -58,10 +58,21 @@ Point clé : **royalties artistes et reversements aux labels ou distributeurs re
 Le MVP se limite volontairement à trois briques, pour mettre un outil en service le plus tôt possible :
 
 - **Socle SaaS** : multi-tenant (un label = un espace isolé), utilisateurs, invitations, rôles et permissions.
+- **Devises et taux de conversion**, dès le départ (voir ci-dessous).
 - **Catalogue** : releases, titres, formats, merch, identifiants UPC, ISRC, SKU, numéro de catalogue, et partenaires (artistes, labels, distributeurs) rattachés à chaque référence.
 - **Portail partenaires** (artistes et fournisseurs) : chaque partenaire consulte ses références et les documents que le label dépose pour lui (relevés au format PDF, contrats), avec notification à chaque nouveau dépôt.
 
-Dans le MVP, les relevés restent produits hors de l'outil et sont déposés à la main sur le portail. Le partenaire bénéficie dès le départ d'un accès en ligne ; le calcul automatique viendra au Lot 3.
+Les relevés sont **mensuels**. Dans le MVP, ils restent produits hors de l'outil et sont déposés à la main chaque mois sur le portail, rattachés à leur période (mois). Le partenaire bénéficie dès le départ d'un accès en ligne ; le calcul automatique mensuel viendra au Lot 3.
+
+L'outil démarre **sans reprise de l'historique** : seuls le catalogue actif et les partenaires sont saisis ou importés. Les ventes et relevés antérieurs à la mise en service restent dans les outils actuels du label.
+
+#### Gestion des devises
+
+- Chaque label choisit une **devise de référence** (comptabilité et tableaux de bord).
+- Chaque partenaire a une **devise de relevé** ; chaque montant (prix, vente, avance, paiement) est stocké avec sa devise d'origine.
+- **Taux de conversion** récupérés automatiquement chaque jour (référence BCE), avec possibilité de saisie ou de surcharge manuelle par le label.
+- **Historique des taux** conservé ; une vente est convertie au taux de sa date, et ce taux est figé pour qu'un relevé ne change jamais après coup.
+- Montants stockés en décimal exact (jamais en flottant), arrondis selon la devise au moment de la conversion.
 
 ### Après le MVP
 
@@ -76,6 +87,7 @@ Dans le MVP, les relevés restent produits hors de l'outil et sont déposés à 
 - Comptabilité générale et déclarations fiscales.
 - Gestion des droits d'auteur et éditions musicales (SACEM et équivalents).
 - Application mobile native.
+- Reprise de l'historique des ventes et des relevés antérieurs à la mise en service.
 
 ## 6. Organisation et ressources
 
@@ -98,6 +110,7 @@ Règles de conduite liées au mode solo :
 - Panels : application label, portail partenaires, console plateforme.
 - Couche « canaux de vente » générique : chaque source (Shopify, Bandcamp, CSV distributeurs, plus tard in-app) produit des ventes dans un format normalisé unique.
 - Synchronisations par tâches planifiées et files d'attente.
+- Montants modélisés dès le premier jour comme couple montant + devise (objet valeur, stockage décimal exact), avec une table des taux de change datés et une tâche planifiée de mise à jour quotidienne.
 
 ## 8. Découpage et calendrier
 
@@ -105,10 +118,10 @@ Hypothèse : 25 heures par semaine en moyenne, démarrage début novembre 2026.
 
 | Lot | Contenu | Durée | Fin visée |
 |---|---|---|---|
-| 0 – Cadrage et fondations | Cadrage, entretiens marché, socle SaaS multi-tenant, CI | 3 à 4 sem. | fin novembre 2026 |
-| 1 – MVP | Catalogue et partenaires, portail partenaires avec dépôt manuel de documents | 5 à 7 sem. | fin janvier 2027 |
+| 0 – Cadrage et fondations | Cadrage, entretiens marché, socle SaaS multi-tenant, devises et taux, CI | 3 à 4 sem. | fin novembre 2026 |
+| 1 – MVP | Catalogue et partenaires, portail partenaires avec dépôt manuel des relevés mensuels | 5 à 7 sem. | fin janvier 2027 |
 | 2 – Centraliser les ventes | Shopify, Bandcamp, imports CSV, rapprochement, tableau de bord | 6 à 8 sem. | fin mars 2027 |
-| 3 – Calculer | Contrats, moteur de relevés, paiements, publication automatique sur le portail | 6 à 8 sem. | fin mai 2027 |
+| 3 – Calculer | Contrats, moteur de relevés mensuels, paiements, publication automatique sur le portail | 6 à 8 sem. | fin mai 2027 |
 | 4 – Stock et ventes directes | Mouvements, inventaires, ventes in-app, synchro quantités | 4 à 6 sem. | début juillet 2027 |
 | 5 – Commercialisation SaaS | Abonnements, onboarding, support | 6 à 8 sem. | fin septembre 2027 |
 
@@ -116,7 +129,7 @@ Jalons clés :
 
 - **Fin janvier 2027** : MVP en production pour le label pilote ; ses partenaires accèdent au portail.
 - **Février 2027** : présentation du MVP à 2 ou 3 labels pilotes, configurés à la main, sans facturation.
-- **Fin mai 2027** : relevés calculés automatiquement, la douleur principale est résolue.
+- **Fin mai 2027** : relevés mensuels calculés automatiquement, la douleur principale est résolue.
 - **Fin 2027** : ouverture commerciale, en intégrant une marge de 20 % sur les estimations.
 
 ## 9. Risques principaux
@@ -126,24 +139,32 @@ Jalons clés :
 | Diversité des contrats réels plus grande que prévu | Allonge le Lot 3 | Collecter dès le Lot 0 des contrats et relevés existants ; moteur paramétrable, pas de règles codées en dur |
 | Accès à l'API Bandcamp incertain pour un SaaS | Fonction phare compromise | Clarifier les conditions d'accès au Lot 0 ; prévoir l'import CSV du rapport Bandcamp en repli |
 | Formats hétérogènes des relevés distributeurs | Rapprochement incomplet | Modèles de mapping CSV réutilisables, file des ventes non rapprochées |
-| Erreur de calcul dans un relevé | Perte de confiance des partenaires | Tests exhaustifs, traçabilité de chaque montant jusqu'aux ventes sources, validation sur l'historique |
+| Erreur de calcul dans un relevé | Perte de confiance des partenaires | Tests exhaustifs, traçabilité de chaque montant jusqu'aux ventes sources, double production (outil et méthode actuelle) sur les deux ou trois premiers mois |
+| Conversion de devises incohérente (taux manquant, arrondis) | Écarts dans les relevés | Taux datés et figés, surcharge manuelle, alerte si un taux manque, tests d'arrondi par devise |
 | Fuite de données entre labels ou partenaires | Grave, contractuel et RGPD | Multi-tenancy native, policies systématiques, tests de cloisonnement dédiés |
 | Développeur unique : dispersion, fatigue, indisponibilité | Retards, arrêt | Un lot à la fois, rythme régulier, CI et documentation à jour |
 | Marché déjà occupé par des outils de royalties | Différenciation faible | Étude de la concurrence et entretiens au Lot 0 ; miser sur le tout-en-un et l'intégration Shopify + Bandcamp |
 
 ## 10. Prochaines actions (Lot 0)
 
-- [ ] Rassembler 3 à 5 contrats types et les derniers relevés produits par le label.
+- [ ] Rassembler 3 à 5 contrats types et un exemple de relevé mensuel par type de partenaire (modèle pour le Lot 3, pas de reprise).
 - [ ] Exporter un échantillon de ventes Shopify, Bandcamp et de chaque distributeur.
 - [ ] Clarifier les conditions d'accès à l'API Bandcamp.
 - [ ] Mener 5 à 10 entretiens avec des labels indépendants.
 - [ ] Étudier 3 à 5 outils concurrents et positionner l'offre.
-- [ ] Initialiser le projet Laravel + Filament avec CI et multi-tenancy (issue #2).
+- [ ] Initialiser le projet Laravel + Filament avec CI, multi-tenancy et gestion des devises (issue #2).
+- [ ] Lister les devises utilisées par le label pilote et ses partenaires.
 - [ ] Rédiger les spécifications détaillées du MVP (catalogue et portail partenaires).
 
-## 11. Questions ouvertes
+## 11. Décisions prises
+
+| Date | Décision |
+|---|---|
+| 31/10/2026 | MVP limité au socle SaaS, au catalogue et au portail partenaires. |
+| 31/10/2026 | Multi-devises et taux de conversion gérés dès le socle (Lot 0). |
+| 31/10/2026 | Relevés mensuels pour tous les partenaires. |
+| 31/10/2026 | Pas de reprise de l'historique des ventes et relevés. |
+
+## 12. Questions ouvertes
 
 - Grille tarifaire et modèle d'abonnement (par label, par volume de ventes, par nombre de partenaires).
-- Devises à gérer dès le MVP et règles de conversion.
-- Fréquence des relevés proposée par défaut (trimestrielle, semestrielle).
-- Reprise de l'historique : sur combien de périodes passées ?
