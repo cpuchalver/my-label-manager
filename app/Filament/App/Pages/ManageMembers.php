@@ -4,12 +4,15 @@ namespace App\Filament\App\Pages;
 
 use App\Enums\LabelPermission;
 use App\Enums\LabelRole;
+use App\Filament\App\Widgets\PendingInvitations;
 use App\Models\Label;
 use App\Models\User;
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\EmbeddedTable;
@@ -35,6 +38,54 @@ class ManageMembers extends Page implements HasTable
     public static function canAccess(): bool
     {
         return auth()->user()?->can(LabelPermission::ManageMembers->value) ?? false;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('inviteMember')
+                ->label('Invite member')
+                ->icon(Heroicon::OutlinedUserPlus)
+                ->schema([
+                    TextInput::make('email')
+                        ->label('Email address')
+                        ->email()
+                        ->required()
+                        ->maxLength(255)
+                        ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (is_string($value) && $this->currentLabel()->hasMemberWithEmail($value)) {
+                                $fail('This person is already a member of the label.');
+                            }
+                        }),
+                    Select::make('role')
+                        ->options(LabelRole::assignableOptions())
+                        ->default(LabelRole::Viewer->value)
+                        ->required(),
+                ])
+                ->action(function (array $data): void {
+                    $currentUser = auth()->user();
+
+                    $this->currentLabel()->inviteMember(
+                        (string) $data['email'],
+                        LabelRole::from((string) $data['role']),
+                        $currentUser instanceof User ? $currentUser : null,
+                    );
+
+                    $this->dispatch('invitation-sent');
+
+                    Notification::make()
+                        ->title('Invitation sent')
+                        ->success()
+                        ->send();
+                }),
+        ];
+    }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            PendingInvitations::class,
+        ];
     }
 
     public function content(Schema $schema): Schema

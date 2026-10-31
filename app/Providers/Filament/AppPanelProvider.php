@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\AcceptInvitation;
 use App\Http\Middleware\ApplyLabelPermissions;
 use App\Http\Middleware\EnsureLabelIsActive;
 use App\Models\Label;
@@ -20,6 +21,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AppPanelProvider extends PanelProvider
@@ -38,6 +40,9 @@ class AppPanelProvider extends PanelProvider
                 AppAuthentication::make()
                     ->recoverable(),
             ])
+            ->routes(function (): void {
+                Route::get('invitations/{token}', AcceptInvitation::class)->name('invitations.accept');
+            })
             ->tenant(Label::class, slugAttribute: 'slug')
             ->tenantMiddleware([
                 ApplyLabelPermissions::class,

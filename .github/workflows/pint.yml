@@ -21,4 +21,13 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Check code style
-        run: vendor/bin/pint --test
+        run: vendor/bin/pint --test -v 2>&1 | tee pint-output.txt; exit ${PIPESTATUS[0]}
+
+      - name: Report code style issues
+        if: failure()
+        run: |
+          output=$(tail -c 60000 pint-output.txt | sed 's/\x1b\[[0-9;]*m//g')
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          echo "::error title=Code style::${output}"
