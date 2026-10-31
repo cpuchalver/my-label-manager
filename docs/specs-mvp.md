@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Version | 0.8 – 31 octobre 2026 (brouillon à valider) |
+| Version | 1.0 – 31 octobre 2026 (validée) |
 | Périmètre | Lot 0 (socle SaaS, devises) et Lot 1 (catalogue, portail partenaires) |
-| Référence | [Note de cadrage v1.4](cadrage.md) |
+| Référence | [Note de cadrage v1.7](cadrage.md) |
 | Suivi | Epics [#2 Socle](https://github.com/cpuchalver/my-label-manager/issues/2) · [#3 Catalogue](https://github.com/cpuchalver/my-label-manager/issues/3) · [#8 Portail](https://github.com/cpuchalver/my-label-manager/issues/8) |
 
 ## 1. Objet
@@ -226,7 +226,12 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 
 **P4 – Mes contrats.** Liste des contrats publiés avec téléchargement du PDF ; un indicateur signale les contrats non encore consultés.
 
-**P5 – Mon profil.** Nom, langue, mot de passe, double authentification. Les coordonnées du partenaire sont affichées en lecture ; une modification se demande au label.
+**P5 – Mon profil.** Nom, langue, mot de passe, double authentification.
+
+**P5b – Coordonnées du partenaire.** Le contact modifie les coordonnées du partenaire : nom d'usage, raison sociale, e-mail, téléphone, adresses, n° de TVA.
+- Le type de partenaire, la devise de relevé et le statut de fournisseur restent réservés au label.
+- Chaque modification est journalisée (valeurs avant et après, auteur) et notifiée par e-mail et dans l'application aux propriétaire et administrateurs du label.
+- Le label peut annuler une modification depuis le journal.
 
 **P6 – Notifications.** Un e-mail à chaque contrat publié, avec un lien direct vers le portail. Aucun contenu du contrat dans l'e-mail.
 
@@ -235,10 +240,10 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 | N° | Règle |
 |---|---|
 | RG-01 | **Cloisonnement des labels** : aucune donnée d'un label n'est lisible ni modifiable depuis un autre label, y compris par URL directe, recherche, import ou export. |
-| RG-02 | **Cloisonnement des partenaires** : un contact ne voit que les données du partenaire sélectionné, et uniquement ce que le portail expose (P3, P4). |
+| RG-02 | **Cloisonnement des partenaires** : un contact ne voit que les données du partenaire sélectionné, et uniquement ce que le portail expose (P3, P4) ; il ne modifie que ce que P5 et P5b autorisent. |
 | RG-03 | **Unicité** dans un label : numéro de catalogue (release), ISRC (titre), SKU et UPC/EAN (variante). Comparaison insensible à la casse, aux espaces et aux tirets. |
 | RG-04 | **Formats** : ISRC sur 12 caractères (pays 2, déclarant 3, année 2, numéro 5) ; UPC sur 12 chiffres ou EAN sur 13 chiffres avec clé de contrôle vérifiée. Les identifiants sont enregistrés sans séparateurs et affichés au format usuel. |
-| RG-05 | **Héritage des crédits** : un crédit sur une release vaut pour ses titres. Un crédit direct sur un titre s'ajoute à ceux hérités ; l'héritage peut être désactivé release par release. |
+| RG-05 | **Héritage des crédits** : sur un album, un EP ou un single, un crédit sur la release vaut pour tous ses titres ; un crédit direct sur un titre s'ajoute à ceux hérités. Sur une **compilation**, il n'y a pas d'héritage : un artiste ne voit que les titres où il est crédité, et les produits de la compilation ne lui sont pas montrés. |
 | RG-06 | **Montants** : valeur décimale exacte (jamais en virgule flottante) avec un code devise ; arrondi selon le nombre de décimales de la devise, uniquement à l'affichage et au moment d'une conversion enregistrée. |
 | RG-07 | **Source des taux** : import quotidien des taux de référence de la BCE (publiés les jours ouvrés vers 16 h, heure de Paris), stockés contre l'euro. Les devises non couvertes par la BCE se gèrent par saisie manuelle. |
 | RG-08 | **Choix du taux** pour une devise et une date : taux manuel du label à cette date, sinon taux BCE à cette date, sinon dernier taux disponible dans les 7 jours précédents (week-ends, jours fériés). Les conversions entre deux devises autres que l'euro passent par l'euro. |
@@ -259,7 +264,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 - **Performance** : listes et fiches affichées en moins d'une seconde pour un catalogue de 5 000 variantes ; import de 5 000 lignes en moins de 5 minutes.
 - **Données personnelles (RGPD)** : hébergement dans l'Union européenne ; export et suppression des données d'un contact à sa demande ; registre des traitements et mentions d'information sur le portail.
 - **Exploitation** : environnements de recette et de production ; sauvegarde quotidienne de la base et des fichiers conservée 30 jours, restauration testée avant la mise en service ; suivi des erreurs et des tâches planifiées (import des taux).
-- **Langues** : application en **anglais par défaut** (interface, e-mails, modèles CSV, PDF générés plus tard). Tous les textes passent par les fichiers de traduction Laravel, aucun texte en dur ; chaque utilisateur peut choisir sa langue parmi celles disponibles, et chaque label définit la langue par défaut de ses invitations. Le code, la base de données et les identifiants techniques sont en anglais.
+- **Langues** : application en **anglais par défaut** (interface, e-mails, modèles CSV, PDF générés plus tard). Tous les textes passent par les fichiers de traduction Laravel, aucun texte en dur ; chaque utilisateur peut choisir sa langue parmi celles disponibles, et chaque label définit la langue par défaut de ses invitations. **Seul l'anglais est livré au MVP** ; le français viendra plus tard. Le code, la base de données et les identifiants techniques sont en anglais.
 - **Navigateurs** : deux dernières versions de Chrome, Firefox, Safari et Edge ; portail utilisable sur mobile.
 
 ## 8. Découpage proposé
@@ -282,7 +287,7 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 | S10 | Impersonation depuis la console (A4, RG-15) | 6 h |
 | S11 | Référentiel pays et subdivisions (chargement, console A5), adresses polymorphes et composant de formulaire (RG-16) | 8 h |
 
-### Lot 1 – Catalogue et portail (epics #3 et #8) : environ 120 h
+### Lot 1 – Catalogue et portail (epics #3 et #8) : environ 124 h
 
 | Issue | Contenu | Estimation |
 |---|---|---|
@@ -294,18 +299,23 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 | C6 | Import CSV du catalogue | 14 h |
 | C7 | Recherche globale et tableau de bord | 6 h |
 | K1 | Contrats : dépôt, publication, archivage, invitation des contacts | 10 h |
-| P1 | Portail : accès, choix du partenaire, profil | 8 h |
+| P1 | Portail : accès, choix du partenaire, profil, modification des coordonnées par le partenaire (P5b) | 12 h |
 | P2 | Portail : mes références | 8 h |
 | P3 | Portail : mes contrats, téléchargement sécurisé, notifications | 8 h |
 | P4 | Tests de cloisonnement du portail (RG-02) | 6 h |
 | R1 | Recette sur le label pilote, saisie du catalogue actif, mise en production | 14 h |
 
-Avec la marge, le Lot 1 représente environ 145 h, soit 6 semaines à 25 h : cohérent avec la fin janvier 2027 visée.
+Avec la marge, le Lot 1 représente environ 150 h, soit 6 semaines à 25 h : cohérent avec la fin janvier 2027 visée.
 
-## 9. Points à valider
+## 9. Décisions
 
-1. **Langues** : l'anglais est la langue par défaut (décidé). Une traduction française est-elle livrée dès le MVP (environ 6 h) ou plus tard ?
-2. **Création des labels** : au MVP, c'est l'administrateur plateforme (toi) qui crée chaque label et invite son propriétaire. D'accord ?
-3. **Coordonnées bancaires** : pas stockées avant le Lot 3, pour limiter les données sensibles au MVP. D'accord ?
-4. **Coordonnées du partenaire** : modifiables uniquement par le label (le contact les voit en lecture et demande une correction), ou modifiables par le contact lui-même ?
-5. **Héritage des crédits** (RG-05) : sur une compilation, un artiste crédité voit-il toute la release ? Proposition : non, sur une compilation seuls les crédits par titre comptent ; l'héritage s'applique aux albums, EP et singles.
+| Sujet | Décision |
+|---|---|
+| Langues | Anglais par défaut et seule langue livrée au MVP ; textes prêts à traduire, français plus tard. |
+| Création des labels | Par l'administrateur plateforme, qui invite le propriétaire ; pas d'inscription libre avant le Lot 5. |
+| Coordonnées bancaires | Non stockées avant le Lot 3. |
+| Coordonnées du partenaire | Modifiables par le label et par le partenaire depuis le portail, avec journal et notification au label (P5b). |
+| Compilations | Pas d'héritage des crédits : l'artiste ne voit que ses titres (RG-05). |
+| Impersonation | Prévue pour les administrateurs plateforme, encadrée (A4, RG-15). |
+| Fournisseurs | Le fournisseur possède le produit, le label possède la vente (RG-17). |
+| Distributeurs | Digitaux et physiques, uniquement comme canaux de vente à partir du Lot 2 ; pas d'accès au portail. |
