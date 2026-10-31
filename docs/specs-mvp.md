@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 0.3 – 31 octobre 2026 (brouillon à valider) |
+| Version | 0.4 – 31 octobre 2026 (brouillon à valider) |
 | Périmètre | Lot 0 (socle SaaS, devises) et Lot 1 (catalogue, portail partenaires) |
 | Référence | [Note de cadrage v1.4](cadrage.md) |
 | Suivi | Epics [#2 Socle](https://github.com/cpuchalver/my-label-manager/issues/2) · [#3 Catalogue](https://github.com/cpuchalver/my-label-manager/issues/3) · [#8 Portail](https://github.com/cpuchalver/my-label-manager/issues/8) |
@@ -75,6 +75,10 @@ erDiagram
     PARTENAIRE ||--o{ CONTRAT : "signe"
     CONTRAT }o--o{ RELEASE : "couvre"
     LABEL ||--o{ TAUX_DE_CHANGE : "surcharge"
+    COUNTRY ||--o{ STATE : "divisé en"
+    ADDRESS }o--|| COUNTRY : "dans"
+    ADDRESS }o--o| STATE : "dans"
+    ADDRESS }o--|| ADDRESSABLE : "label, partenaire, plus tard entrepôt ou client"
 ```
 
 Toutes les tables métier portent un `label_id` et sont filtrées automatiquement sur le label courant.
@@ -83,11 +87,21 @@ Toutes les tables métier portent un `label_id` et sont filtrées automatiquemen
 
 | Entité | Champs principaux | Règles |
 |---|---|---|
-| **Label** | nom, slug, pays, devise de référence, fuseau horaire, langue par défaut (anglais si non précisé), logo, statut (actif, suspendu) | La devise de référence ne peut plus changer une fois des montants saisis (Lot 2 et suivants) ; en MVP elle reste modifiable. |
+| **Label** | nom, slug, pays (Country), devise de référence, fuseau horaire, langue par défaut (anglais si non précisé), logo, statut (actif, suspendu) | La devise de référence ne peut plus changer une fois des montants saisis (Lot 2 et suivants) ; en MVP elle reste modifiable. |
 | **Utilisateur** | nom, e-mail (unique), mot de passe, langue, double authentification, administrateur plateforme (oui/non) | |
 | **Membre** | label, utilisateur, rôle | Un utilisateur a un seul rôle par label. |
 | **Invitation** | e-mail, type (membre ou contact), rôle ou partenaire cible, jeton, expiration, acceptée le | Valable 7 jours, usage unique, renvoyable. Si l'e-mail a déjà un compte, l'invitation rattache ce compte. |
 | **Journal d'audit** | date, utilisateur, label, action, objet, valeurs avant et après | Voir RG-12. |
+
+### Référentiel géographique
+
+| Entité (code) | Champs principaux | Règles |
+|---|---|---|
+| **Pays** (`Country`) | code ISO 3166-1 alpha-2 et alpha-3, code numérique, nom (traduit), devise usuelle, indicatif téléphonique, subdivision obligatoire dans une adresse (oui/non), format de code postal (facultatif), actif | Référentiel commun à toute la plateforme, chargé depuis un jeu de données ISO (source et licence à valider). Non modifiable par les labels ; géré depuis la console (A5). |
+| **Subdivision** (`State`) | pays, code ISO 3166-2 (ex. `US-CA`, `CA-QC`), nom (traduit), type (État, province, région, territoire…), active | Chargée pour les pays où elle sert dans une adresse postale (États-Unis, Canada, Australie, Brésil, Mexique, Inde, Italie, Espagne, Japon…). |
+| **Adresse** (`Address`, polymorphe) | objet adressable (type et identifiant), type (principale, facturation, livraison, autre), libellé, destinataire, société, ligne 1, ligne 2, code postal, ville, subdivision, pays, par défaut (oui/non) | Rattachable à tout modèle « adressable » : au MVP le **label** et le **partenaire** ; plus tard l'entrepôt (Lot 4) et le client (ventes). Plusieurs adresses par objet, une seule par défaut pour chaque type. Voir RG-16. |
+
+Le pays d'un label ou d'un partenaire est celui de son adresse principale ; les champs « adresse » et « pays » isolés disparaissent au profit de ce modèle commun.
 
 ### Devises
 
@@ -102,7 +116,7 @@ Toutes les tables métier portent un `label_id` et sont filtrées automatiquemen
 
 | Entité | Champs principaux | Règles |
 |---|---|---|
-| **Partenaire** | type (artiste, label, distributeur), nom d'usage, raison sociale, e-mail, téléphone, adresse, pays, devise de relevé, n° de TVA, notes | La devise de relevé fait partie des devises actives du label. Pas de coordonnées bancaires au MVP (Lot 3). |
+| **Partenaire** | type (artiste, label, distributeur), nom d'usage, raison sociale, e-mail, téléphone, adresses (Address), devise de relevé, n° de TVA, notes | La devise de relevé fait partie des devises actives du label. Pas de coordonnées bancaires au MVP (Lot 3). |
 | **Contact** | partenaire, utilisateur | Un partenaire peut avoir plusieurs contacts. |
 | **Release** | titre, artiste affiché, type (album, EP, single, compilation), numéro de catalogue, date de sortie, statut (en préparation, sortie, retirée), visuel, notes | Numéro de catalogue unique dans le label. |
 | **Titre** | titre, version (ex. « Radio Edit »), ISRC, durée, artiste affiché | ISRC unique dans le label, format contrôlé (RG-04). Un titre peut figurer sur plusieurs releases. |
@@ -132,6 +146,8 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 - La session s'arrête automatiquement au bout de 30 minutes ou à la déconnexion, et l'administrateur retrouve sa propre session dans la console.
 - Le démarrage et la fin apparaissent dans le journal d'audit du label concerné, consultable par son propriétaire et ses administrateurs, et dans le journal de la plateforme.
 
+**A5 – Gérer le référentiel géographique.** L'administrateur consulte les pays et subdivisions, active ou désactive une entrée, corrige un nom ou une règle (subdivision obligatoire, format de code postal). Le référentiel peut être rechargé depuis la source sans écraser ces réglages.
+
 ### 5.2 Application label – socle
 
 **L1 – Connexion et compte.** Connexion par e-mail et mot de passe, mot de passe oublié, double authentification facultative (recommandée pour propriétaire et administrateurs), choix de la langue.
@@ -151,7 +167,8 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 
 ### 5.3 Application label – catalogue
 
-**C1 – Partenaires.** Liste filtrable par type, fiche détaillée avec onglets : informations, références rattachées, contrats, contacts du portail.
+**C1 – Partenaires.** Liste filtrable par type et par pays, fiche détaillée avec onglets : informations, adresses, références rattachées, contrats, contacts du portail.
+- Le formulaire d'adresse est un composant commun réutilisé partout : le choix du pays filtre la liste des subdivisions et adapte les champs obligatoires.
 - Un partenaire rattaché à des références ou des contrats ne peut pas être supprimé ; il peut être archivé.
 
 **C2 – Releases.** Liste avec visuel, numéro de catalogue, artiste, type, date, statut ; fiche avec tracklist, produits et partenaires rattachés.
@@ -219,6 +236,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 | RG-13 | **Fichiers** : PDF uniquement pour les contrats, 20 Mo maximum ; images JPG, PNG ou WebP pour les visuels, 10 Mo maximum. Stockage privé ; téléchargement par lien signé valable 5 minutes, après contrôle des droits. |
 | RG-14 | **Dates** : stockées en UTC, affichées dans le fuseau du label (application) ou de l'utilisateur (portail). |
 | RG-15 | **Impersonation** : réservée aux administrateurs plateforme ; impossible sur un autre administrateur plateforme ou sur un label suspendu ; impossible d'en démarrer une seconde en cours de session. Pendant l'impersonation sont interdits : changer mot de passe, e-mail ou double authentification, gérer les membres et leurs rôles, transférer la propriété ou fermer le label. Les droits sont ceux de l'utilisateur emprunté, jamais plus. Les conditions générales informent les labels de cette possibilité. |
+| RG-16 | **Adresses** : pays obligatoire ; subdivision obligatoire si le pays l'exige, et forcément rattachée à ce pays ; code postal contrôlé quand le pays a un format connu ; noms de pays et de subdivisions affichés dans la langue de l'utilisateur, codes ISO stockés. Une adresse utilisée par un document émis (plus tard : relevé, facture) est copiée dans ce document pour qu'il ne change pas si l'adresse est modifiée. |
 
 ## 7. Exigences non fonctionnelles
 
@@ -234,7 +252,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 
 Estimations en heures de développement, tests compris ; une marge de 20 % est à ajouter pour les imprévus.
 
-### Lot 0 – Socle (epic #2) : environ 76 h
+### Lot 0 – Socle (epic #2) : environ 84 h
 
 | Issue | Contenu | Estimation |
 |---|---|---|
@@ -248,6 +266,7 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 | S8 | Taux de change : import BCE, saisie manuelle, choix du taux, alertes (L5, A3, RG-07 à RG-10) | 12 h |
 | S9 | Journal d'audit (L6, RG-12) | 4 h |
 | S10 | Impersonation depuis la console (A4, RG-15) | 6 h |
+| S11 | Référentiel pays et subdivisions (chargement, console A5), adresses polymorphes et composant de formulaire (RG-16) | 8 h |
 
 ### Lot 1 – Catalogue et portail (epics #3 et #8) : environ 120 h
 
