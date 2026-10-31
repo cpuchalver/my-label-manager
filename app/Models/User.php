@@ -4,6 +4,10 @@ namespace App\Models;
 
 use App\Enums\LabelRole;
 use Database\Factories\UserFactory;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
@@ -22,12 +26,14 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'is_admin'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser, HasDefaultTenant, HasTenants, MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasDefaultTenant, HasTenants, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
     use HasRoles;
+    use InteractsWithAppAuthentication;
+    use InteractsWithAppAuthenticationRecovery;
     use Notifiable;
 
     public function canAccessPanel(Panel $panel): bool
