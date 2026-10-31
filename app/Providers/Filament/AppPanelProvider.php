@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\ApplyLabelPermissions;
 use App\Http\Middleware\EnsureLabelIsActive;
 use App\Models\Label;
 use Filament\Http\Middleware\Authenticate;
@@ -31,6 +32,7 @@ class AppPanelProvider extends PanelProvider
             ->emailVerification()
             ->tenant(Label::class, slugAttribute: 'slug')
             ->tenantMiddleware([
+                ApplyLabelPermissions::class,
                 EnsureLabelIsActive::class,
             ], isPersistent: true)
             ->colors([
