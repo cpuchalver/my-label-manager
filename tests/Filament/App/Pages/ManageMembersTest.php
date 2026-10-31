@@ -2,8 +2,8 @@
 
 use App\Enums\LabelRole;
 use App\Filament\App\Pages\ManageMembers;
-use App\Models\Label;
 use App\Models\Invitation;
+use App\Models\Label;
 use App\Models\User;
 use App\Notifications\LabelInvitation;
 use Filament\Actions\Testing\TestAction;
@@ -132,4 +132,3 @@ it('refuses to invite someone who is already a member', function () {
 
     expect(Invitation::query()->count())->toBe(0);
 });
-
