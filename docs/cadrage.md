@@ -2,14 +2,14 @@
 
 | | |
 |---|---|
-| Version | 1.6 – 31 octobre 2026 (distributeurs digitaux uniquement, comme canaux de vente) |
+| Version | 1.7 – 31 octobre 2026 (distributeurs digitaux et physiques, comme canaux de vente) |
 | Porteur et développeur | @cpuchalver |
 | Statut | Validée pour lancer le Lot 0 |
 | Suivi | [Issues](https://github.com/cpuchalver/my-label-manager/issues) · [Jalons](https://github.com/cpuchalver/my-label-manager/milestones) |
 
 ## 1. Vision
 
-> Un back-office tout-en-un pour labels indépendants : catalogue centralisé, ventes Shopify, Bandcamp et distributeurs digitaux consolidées, relevés de royalties et de reversements calculés automatiquement, et un accès direct pour les partenaires.
+> Un back-office tout-en-un pour labels indépendants : catalogue centralisé, ventes Shopify, Bandcamp et distributeurs (digitaux et physiques) consolidées, relevés de royalties et de reversements calculés automatiquement, et un accès direct pour les partenaires.
 
 My Label Manager est un **produit SaaS** destiné aux labels de musique indépendants. Le label du porteur de projet en est le premier utilisateur et le terrain de validation.
 
@@ -17,7 +17,7 @@ My Label Manager est un **produit SaaS** destiné aux labels de musique indépen
 
 Un label indépendant gère aujourd'hui son activité de façon éclatée :
 
-- les ventes sont dispersées entre sa boutique Shopify, Bandcamp et les relevés de ses distributeurs digitaux (streaming, téléchargement), chacun avec son format ;
+- les ventes sont dispersées entre sa boutique Shopify, Bandcamp et les relevés de ses distributeurs, digitaux (streaming, téléchargement) et physiques (disquaires, revendeurs), chacun avec son format ;
 - les royalties et reversements sont calculés à la main dans des tableurs, avec un risque d'erreur et un temps important à chaque période ;
 - les partenaires (artistes, labels, autres fournisseurs) reçoivent leurs relevés par e-mail et n'ont aucune visibilité en dehors de ces envois.
 
@@ -45,7 +45,7 @@ Point clé : **le fournisseur possède le produit, le label possède la vente.**
 | Centraliser le catalogue | Références du label saisies ou importées avec leurs partenaires | 100 % du catalogue actif | 1 (MVP) |
 | Ouvrir l'accès aux partenaires | Partenaires actifs sur le portail six mois après ouverture | ≥ 50 % | 1 (MVP) |
 | Marché | Labels pilotes utilisant l'outil | 2 à 3 en février 2027 | 1 (MVP) |
-| Centraliser les ventes | Part des ventes du label importées automatiquement | 100 % des canaux actifs (Shopify, Bandcamp, distributeurs digitaux) | 2 |
+| Centraliser les ventes | Part des ventes du label importées automatiquement | 100 % des canaux actifs (Shopify, Bandcamp, distributeurs digitaux et physiques) | 2 |
 | Fiabiliser | Ventes rapprochées automatiquement du catalogue | ≥ 95 % | 2 |
 | Gagner du temps | Durée de production des relevés d'une période | Moins d'une heure, contre plusieurs jours aujourd'hui | 3 |
 | Exactitude | Écart entre relevés calculés par l'outil et relevés produits à la main en parallèle sur les premiers mois | Zéro écart non expliqué | 3 |
@@ -75,7 +75,7 @@ L'outil démarre **sans reprise de l'historique** : seuls le catalogue actif et 
 
 ### Après le MVP
 
-- Ventes centralisées : connecteurs Shopify et Bandcamp, imports CSV des relevés des distributeurs digitaux, rapprochement avec le catalogue, tableau de bord (Lot 2).
+- Ventes centralisées : connecteurs Shopify et Bandcamp, imports CSV des relevés des distributeurs digitaux et physiques, rapprochement avec le catalogue, tableau de bord (Lot 2).
 - Contrats paramétrables et moteur de relevés : calcul, avances, splits, paiements, publication automatique des relevés sur le portail (Lot 3).
 - Stock et logistique, ventes in-app, synchronisation des quantités vers les canaux (Lot 4).
 - Abonnements, facturation et onboarding libre-service (Lot 5).
@@ -83,8 +83,7 @@ L'outil démarre **sans reprise de l'historique** : seuls le catalogue actif et 
 ### Hors périmètre
 
 - Distribution numérique vers les plateformes de streaming.
-- **Distributeurs physiques** : non gérés (ni fiches, ni stock en dépôt chez eux).
-- Les **distributeurs digitaux** ne sont ni des partenaires ni des fournisseurs : ce sont uniquement des canaux de vente, dont on importe les relevés. Ils n'ont pas accès au portail.
+- Accès des **distributeurs** au portail : les distributeurs, digitaux comme physiques, ne sont ni des partenaires ni des fournisseurs, mais des canaux de vente dont on importe les relevés. Le stock confié aux distributeurs physiques est suivi avec le stock (Lot 4).
 - Comptabilité générale et déclarations fiscales.
 - Gestion des droits d'auteur et éditions musicales (SACEM et équivalents).
 - Application mobile native.
@@ -109,7 +108,7 @@ Règles de conduite liées au mode solo :
 - Qualité : Pest, PHPStan niveau 8, Pint, CI GitHub Actions.
 - Multi-tenancy Filament dès le premier jour.
 - Panels : application label, portail partenaires, console plateforme.
-- Couche « canaux de vente » générique : chaque source (Shopify, Bandcamp, CSV des distributeurs digitaux, plus tard in-app) produit des ventes dans un format normalisé unique.
+- Couche « canaux de vente » générique : chaque source (Shopify, Bandcamp, CSV des distributeurs digitaux et physiques, plus tard in-app) produit des ventes dans un format normalisé unique.
 - Synchronisations par tâches planifiées et files d'attente.
 - Montants modélisés dès le premier jour comme couple montant + devise (objet valeur, stockage décimal exact), avec une table des taux de change datés et une tâche planifiée de mise à jour quotidienne.
 
@@ -141,7 +140,7 @@ Jalons clés :
 | Accès à l'API Bandcamp incertain pour un SaaS | Fonction phare compromise | Clarifier les conditions d'accès au Lot 0 ; prévoir l'import CSV du rapport Bandcamp en repli |
 | Erreur de calcul dans un relevé | Perte de confiance des partenaires | Tests exhaustifs, traçabilité de chaque montant jusqu'aux ventes sources, double production (outil et méthode actuelle) sur les deux ou trois premiers mois |
 | Conversion de devises incohérente (taux manquant, arrondis) | Écarts dans les relevés | Taux datés et figés, surcharge manuelle, alerte si un taux manque, tests d'arrondi par devise |
-| Formats hétérogènes des relevés des distributeurs digitaux | Rapprochement incomplet | Modèles de mapping CSV réutilisables par distributeur, file des ventes non rapprochées |
+| Formats hétérogènes des relevés des distributeurs | Rapprochement incomplet | Modèles de mapping CSV réutilisables par distributeur, file des ventes non rapprochées |
 | Fuite de données entre labels ou partenaires | Grave, contractuel et RGPD | Multi-tenancy native, policies systématiques, tests de cloisonnement dédiés |
 | Développeur unique : dispersion, fatigue, indisponibilité | Retards, arrêt | Un lot à la fois, rythme régulier, CI et documentation à jour |
 | Marché déjà occupé par des outils de royalties | Différenciation faible | Étude de la concurrence et entretiens au Lot 0 ; miser sur le tout-en-un et l'intégration Shopify + Bandcamp |
@@ -149,7 +148,7 @@ Jalons clés :
 ## 10. Prochaines actions (Lot 0)
 
 - [ ] Rassembler 3 à 5 contrats types et un exemple de relevé mensuel par type de partenaire (modèle pour le Lot 3, pas de reprise).
-- [ ] Exporter un échantillon de ventes Shopify, Bandcamp et de chaque distributeur digital.
+- [ ] Exporter un échantillon de ventes Shopify, Bandcamp et de chaque distributeur (digital et physique).
 - [ ] Clarifier les conditions d'accès à l'API Bandcamp.
 - [ ] Mener 5 à 10 entretiens avec des labels indépendants.
 - [ ] Étudier 3 à 5 outils concurrents et positionner l'offre.
@@ -166,7 +165,7 @@ Jalons clés :
 | 31/10/2026 | Relevés mensuels pour tous les partenaires. |
 | 31/10/2026 | Pas de reprise de l'historique des ventes et relevés. |
 | 31/10/2026 | Portail du MVP limité aux références et aux contrats ; les relevés y arrivent au Lot 3, calculés par l'outil. |
-| 31/10/2026 | Distributeurs physiques non gérés. Distributeurs digitaux gérés uniquement comme canaux de vente (import de leurs relevés au Lot 2), sans portail. |
+| 31/10/2026 | Distributeurs digitaux et physiques gérés comme canaux de vente (import de leurs relevés au Lot 2, stock en dépôt chez les physiques au Lot 4), sans accès au portail. |
 | 31/10/2026 | Grille tarifaire reportée au Lot 5 ; les labels pilotes utilisent l'outil sans facturation. |
 
 ## 12. Questions ouvertes
