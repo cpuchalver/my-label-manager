@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Version | 0.1 – 31 octobre 2026 (brouillon à valider) |
+| Version | 0.2 – 31 octobre 2026 (brouillon à valider) |
 | Périmètre | Lot 0 (socle SaaS, devises) et Lot 1 (catalogue, portail partenaires) |
 | Référence | [Note de cadrage v1.4](cadrage.md) |
 | Suivi | Epics [#2 Socle](https://github.com/cpuchalver/my-label-manager/issues/2) · [#3 Catalogue](https://github.com/cpuchalver/my-label-manager/issues/3) · [#8 Portail](https://github.com/cpuchalver/my-label-manager/issues/8) |
@@ -83,7 +83,7 @@ Toutes les tables métier portent un `label_id` et sont filtrées automatiquemen
 
 | Entité | Champs principaux | Règles |
 |---|---|---|
-| **Label** | nom, slug, pays, devise de référence, fuseau horaire, langue par défaut, logo, statut (actif, suspendu) | La devise de référence ne peut plus changer une fois des montants saisis (Lot 2 et suivants) ; en MVP elle reste modifiable. |
+| **Label** | nom, slug, pays, devise de référence, fuseau horaire, langue par défaut (anglais si non précisé), logo, statut (actif, suspendu) | La devise de référence ne peut plus changer une fois des montants saisis (Lot 2 et suivants) ; en MVP elle reste modifiable. |
 | **Utilisateur** | nom, e-mail (unique), mot de passe, langue, double authentification, administrateur plateforme (oui/non) | |
 | **Membre** | label, utilisateur, rôle | Un utilisateur a un seul rôle par label. |
 | **Invitation** | e-mail, type (membre ou contact), rôle ou partenaire cible, jeton, expiration, acceptée le | Valable 7 jours, usage unique, renvoyable. Si l'e-mail a déjà un compte, l'invitation rattache ce compte. |
@@ -220,7 +220,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 - **Performance** : listes et fiches affichées en moins d'une seconde pour un catalogue de 5 000 variantes ; import de 5 000 lignes en moins de 5 minutes.
 - **Données personnelles (RGPD)** : hébergement dans l'Union européenne ; export et suppression des données d'un contact à sa demande ; registre des traitements et mentions d'information sur le portail.
 - **Exploitation** : environnements de recette et de production ; sauvegarde quotidienne de la base et des fichiers conservée 30 jours, restauration testée avant la mise en service ; suivi des erreurs et des tâches planifiées (import des taux).
-- **Langues** : interface en français, textes prêts à traduire (voir point à valider n° 1).
+- **Langues** : application en **anglais par défaut** (interface, e-mails, modèles CSV, PDF générés plus tard). Tous les textes passent par les fichiers de traduction Laravel, aucun texte en dur ; chaque utilisateur peut choisir sa langue parmi celles disponibles, et chaque label définit la langue par défaut de ses invitations. Le code, la base de données et les identifiants techniques sont en anglais.
 - **Navigateurs** : deux dernières versions de Chrome, Firefox, Safari et Edge ; portail utilisable sur mobile.
 
 ## 8. Découpage proposé
@@ -263,7 +263,7 @@ Avec la marge, le Lot 1 représente environ 145 h, soit 6 semaines à 25 h : coh
 
 ## 9. Points à valider
 
-1. **Langues** : français seul au MVP, ou portail aussi en anglais dès le départ pour les partenaires étrangers (environ 6 h de plus) ?
+1. **Langues** : l'anglais est la langue par défaut (décidé). Une traduction française est-elle livrée dès le MVP (environ 6 h) ou plus tard ?
 2. **Création des labels** : au MVP, c'est l'administrateur plateforme (toi) qui crée chaque label et invite son propriétaire. D'accord ?
 3. **Coordonnées bancaires** : pas stockées avant le Lot 3, pour limiter les données sensibles au MVP. D'accord ?
 4. **Coordonnées du partenaire** : modifiables uniquement par le label (le contact les voit en lecture et demande une correction), ou modifiables par le contact lui-même ?
