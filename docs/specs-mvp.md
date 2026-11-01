@@ -263,6 +263,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 - **Tests** : Pest pour chaque critère d'acceptation ; une suite de **tests de cloisonnement** qui tente, pour chaque ressource, l'accès depuis un autre label et depuis un autre partenaire ; tests unitaires des règles RG-03 à RG-10. PHPStan niveau 8 et Pint bloquants en CI.
 - **Performance** : listes et fiches affichées en moins d'une seconde pour un catalogue de 5 000 variantes ; import de 5 000 lignes en moins de 5 minutes.
 - **Données personnelles (RGPD)** : hébergement dans l'Union européenne ; export et suppression des données d'un contact à sa demande ; registre des traitements et mentions d'information sur le portail.
+- **Temps réel** : Laravel Reverb diffuse les mises à jour sur un canal privé par label, réservé à ses membres ; les pages ouvertes (tableau de bord, notifications) se rafraîchissent sans rechargement. L'événement ne transporte aucune donnée : chaque page relit ce qu'elle affiche avec les droits de l'utilisateur.
 - **Exploitation** : environnements de recette et de production ; sauvegarde quotidienne de la base et des fichiers conservée 30 jours, restauration testée avant la mise en service ; suivi des erreurs et des tâches planifiées (import des taux).
 - **Langues** : application en **anglais par défaut** (interface, e-mails, modèles CSV, PDF générés plus tard). Tous les textes passent par les fichiers de traduction Laravel, aucun texte en dur ; chaque utilisateur peut choisir sa langue parmi celles disponibles, et chaque label définit la langue par défaut de ses invitations. **Seul l'anglais est livré au MVP** ; le français viendra plus tard. Le code, la base de données et les identifiants techniques sont en anglais.
 - **Navigateurs** : deux dernières versions de Chrome, Firefox, Safari et Edge ; portail utilisable sur mobile.
@@ -271,7 +272,7 @@ Chaque fonction est accompagnée de ses critères d'acceptation, qui servent de 
 
 Estimations en heures de développement, tests compris ; une marge de 20 % est à ajouter pour les imprévus.
 
-### Lot 0 – Socle (epic #2) : environ 84 h
+### Lot 0 – Socle (epic #2) : environ 94 h
 
 | Issue | Contenu | Estimation |
 |---|---|---|
@@ -286,6 +287,7 @@ Estimations en heures de développement, tests compris ; une marge de 20 % est �
 | [S9](https://github.com/cpuchalver/my-label-manager/issues/19) | Journal d'audit (L6, RG-12) | 4 h |
 | [S10](https://github.com/cpuchalver/my-label-manager/issues/20) | Impersonation depuis la console (A4, RG-15) | 6 h |
 | [S11](https://github.com/cpuchalver/my-label-manager/issues/21) | Référentiel pays et subdivisions (chargement, console A5), adresses polymorphes et composant de formulaire (RG-16) | 8 h |
+| [S12](https://github.com/cpuchalver/my-label-manager/issues/41) | Temps réel avec Laravel Reverb : canal privé par label, tableau de bord et notifications en direct | 10 h |
 
 ### Lot 1 – Catalogue et portail (epics #3 et #8) : environ 124 h
 

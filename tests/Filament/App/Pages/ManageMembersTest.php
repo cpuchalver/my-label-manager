@@ -2,9 +2,12 @@
 
 use App\Enums\LabelRole;
 use App\Filament\App\Pages\ManageMembers;
+use App\Models\Invitation;
 use App\Models\Label;
 use App\Models\User;
+use App\Notifications\LabelInvitation;
 use Filament\Actions\Testing\TestAction;
+use Illuminate\Support\Facades\Notification;
 
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
@@ -100,4 +103,32 @@ it('protects the owner and the current user from changes', function () {
         ->assertActionHidden(TestAction::make('removeMember')->table($owner))
         ->assertActionHidden(TestAction::make('changeRole')->table($administrator))
         ->assertActionHidden(TestAction::make('removeMember')->table($administrator));
+});
+
+it('invites a new member by email', function () {
+    Notification::fake();
+    actingAsLabelMember($this->label);
+    withinLabel($this->label);
+
+    livewire(ManageMembers::class)
+        ->callAction('inviteMember', data: ['email' => 'jane@example.com', 'role' => LabelRole::Manager->value])
+        ->assertHasNoFormErrors()
+        ->assertNotified();
+
+    expect($this->label->pendingInvitations()->sole())
+        ->email->toBe('jane@example.com')
+        ->role->toBe(LabelRole::Manager);
+
+    Notification::assertSentOnDemand(LabelInvitation::class);
+});
+
+it('refuses to invite someone who is already a member', function () {
+    $owner = actingAsLabelMember($this->label);
+    withinLabel($this->label);
+
+    livewire(ManageMembers::class)
+        ->callAction('inviteMember', data: ['email' => $owner->email, 'role' => LabelRole::Viewer->value])
+        ->assertHasFormErrors(['email']);
+
+    expect(Invitation::query()->count())->toBe(0);
 });

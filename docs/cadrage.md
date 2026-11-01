@@ -110,6 +110,7 @@ Règles de conduite liées au mode solo :
 - Panels : application label, portail partenaires, console plateforme.
 - Couche « canaux de vente » générique : chaque source (Shopify, Bandcamp, CSV des distributeurs digitaux et physiques, plus tard in-app) produit des ventes dans un format normalisé unique.
 - Synchronisations par tâches planifiées et files d'attente.
+- Temps réel avec Laravel Reverb (WebSocket) dès le socle : tableau de bord et notifications en direct.
 - Montants modélisés dès le premier jour comme couple montant + devise (objet valeur, stockage décimal exact), avec une table des taux de change datés et une tâche planifiée de mise à jour quotidienne.
 
 ## 8. Découpage et calendrier
